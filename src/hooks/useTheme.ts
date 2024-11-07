@@ -11,8 +11,9 @@ export function useTheme() {
     useEffect(() => {
         // Update the theme in localStorage whenever it changes
         localStorage.setItem(THEME_KEY, theme);
-        // Apply the theme to the document body
-        document.body.className = theme;
+        // Remove the non-selected theme class and add the selected theme class to the body
+        document.body.classList.remove(theme === 'light' ? 'dark' : 'light');
+        document.body.classList.add(theme);
     }, [theme]);
 
     const toggleTheme = () => {
