@@ -2,11 +2,12 @@ import typographyPlugin from '@tailwindcss/typography'
 import {type Config} from 'tailwindcss'
 
 import typographyStyles from './typography'
+import daisyui from "daisyui"
 
 export default {
     content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
     darkMode: 'selector',
-    plugins: [typographyPlugin],
+    plugins: [typographyPlugin, daisyui],
     theme: {
         fontSize: {
             xs: ['0.8125rem', {lineHeight: '1.5rem'}],
