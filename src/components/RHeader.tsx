@@ -11,6 +11,7 @@ import clsx from 'clsx'
 
 import {Container} from './Container.tsx';
 import {useTheme} from "../hooks/useTheme.ts";
+import avatar from "../assets/avatar.webp";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
     return (
@@ -161,12 +162,12 @@ function NavItem({
     )
 }
 
-function DesktopNavigation(props: React.ComponentPropsWithoutRef<'nav'> & { currentPath: string }) {
+function DesktopNavigation(props: React.ComponentPropsWithoutRef<'nav'> & { currentpath: string }) {
     return (
         <nav {...props}>
             <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
-                <NavItem currentPath={props.currentPath} href="/">Home</NavItem>
-                <NavItem currentPath={props.currentPath} href="/blog">Blog</NavItem>
+                <NavItem currentPath={props.currentpath} href="/">Home</NavItem>
+                <NavItem currentPath={props.currentpath} href="/blog">Blog</NavItem>
             </ul>
         </nav>
     )
@@ -232,7 +233,7 @@ function Avatar({
             {...props}
         >
             <img
-                src="../resources/avatar.webp"
+                src={avatar.src}
                 alt=""
                 sizes={large ? '4rem' : '2.25rem'}
                 className={clsx(
@@ -423,7 +424,7 @@ export function RHeader({currentPath}: { currentPath: string }) {
                             </div>
                             <div className="flex flex-1 justify-end md:justify-center">
                                 <MobileNavigation className="pointer-events-auto md:hidden"/>
-                                <DesktopNavigation currentPath={currentPath}
+                                <DesktopNavigation currentpath={currentPath}
                                                    className="pointer-events-auto hidden md:block"/>
                             </div>
                             <div className="flex justify-end md:flex-1">
