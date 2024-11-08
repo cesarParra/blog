@@ -11,7 +11,7 @@ import clsx from 'clsx'
 
 import {Container} from './Container.tsx';
 import {useTheme} from "../hooks/useTheme.ts";
-import avatar from "../assets/avatar.webp";
+import avatar from "../assets/avatar.jpg";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
     return (
