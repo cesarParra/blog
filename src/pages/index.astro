@@ -1,7 +1,8 @@
 ---
-import {Container} from '../components/Container';
 import {SITE_TITLE, SITE_DESCRIPTION} from '../consts';
 import Main from "../layouts/Main.astro";
+import {Container} from '../components/Container';
+import {SocialLink, GitHubIcon, LinkedInIcon} from '../components/SocialLink';
 ---
 
 <Main title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -17,22 +18,16 @@ import Main from "../layouts/Main.astro";
                     ut aliquip ex ea commodo consequat.
                 </p>
                 <div class="mt-6 flex gap-6">
-                    <!--<SocialLink href="#" aria-label="Follow on X" icon={XIcon} />-->
-                    <!--<SocialLink-->
-                    <!--        href="#"-->
-                    <!--        aria-label="Follow on Instagram"-->
-                    <!--        icon={InstagramIcon}-->
-                    <!--/>-->
-                    <!--<SocialLink-->
-                    <!--        href="#"-->
-                    <!--        aria-label="Follow on GitHub"-->
-                    <!--        icon={GitHubIcon}-->
-                    <!--/>-->
-                    <!--<SocialLink-->
-                    <!--        href="#"-->
-                    <!--        aria-label="Follow on LinkedIn"-->
-                    <!--        icon={LinkedInIcon}-->
-                    <!--/>-->
+                    <SocialLink
+                            href="https://github.com/cesarParra"
+                            aria-label="Follow on GitHub"
+                            icon={GitHubIcon}
+                    />
+                    <SocialLink
+                            href="https://www.linkedin.com/in/parracesar/"
+                            aria-label="Follow on LinkedIn"
+                            icon={LinkedInIcon}
+                    />
                 </div>
             </div>
         </Container>
