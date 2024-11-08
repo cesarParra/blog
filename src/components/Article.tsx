@@ -24,7 +24,7 @@ export function Article({ article }: { article: ArticleWithSlug }) {
     return (
         <article className="md:grid md:grid-cols-4 md:items-baseline">
             <Card className="md:col-span-3">
-                <CardTitle href={`/articles/${article.slug}`}>
+                <CardTitle href={`/blog/${article.slug}`}>
                     {article.title}
                 </CardTitle>
                 <CardEyebrow
