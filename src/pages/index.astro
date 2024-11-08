@@ -3,7 +3,7 @@ import {SITE_TITLE, SITE_DESCRIPTION} from '../consts';
 import Main from "../layouts/Main.astro";
 import {Container} from '../components/Container';
 import {SocialLink, GitHubIcon, LinkedInIcon} from '../components/SocialLink.tsx';
-import {Article} from "../components/Article.tsx";
+import {ArticleCondensed} from "../components/Article.tsx";
 
 import {getCollection} from 'astro:content';
 
@@ -50,7 +50,7 @@ const posts = (await getCollection('blog')).sort(
             <div class="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none">
                 <div class="flex flex-col gap-16">
                     {posts.map((post) => (
-                            <Article article={post}/>
+                            <ArticleCondensed article={post}/>
                     ))}
                 </div>
             </div>
