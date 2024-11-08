@@ -1,3 +1,5 @@
+// TODO: Rename to Post
+
 import {Card, CardTitle, CardEyebrow, CardDescription, CardCta} from "./Card.tsx";
 
 interface Article {
@@ -18,10 +20,10 @@ export function Article({ article }: { article: ArticleWithSlug }) {
     });
     return (
         <Card as="article">
-            <CardTitle href={`/articles/${article.slug}`}>
+            <CardTitle href={`/blog/${article.slug}`}>
                 {article.title}
             </CardTitle>
-            <CardEyebrow as="time" dateTime={article.date} decorate>
+            <CardEyebrow as="time" dateTime={formattedDate} decorate>
                 {formattedDate}
             </CardEyebrow>
             <CardDescription>{article.description}</CardDescription>
