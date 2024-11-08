@@ -12,6 +12,6 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   site: 'https://example.com',
   integrations: [mdx(), sitemap(), react(), tailwind({
-    applyBaseStyles: false
+    applyBaseStyles: true
   })],
 });
