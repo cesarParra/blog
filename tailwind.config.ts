@@ -6,7 +6,7 @@ import daisyui from "daisyui"
 
 export default {
     content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-    darkMode: 'selector',
+    darkMode: 'class',
     plugins: [typographyPlugin, daisyui],
     theme: {
         fontSize: {
@@ -25,5 +25,8 @@ export default {
             '9xl': ['8rem', {lineHeight: '1'}],
         },
         typography: typographyStyles,
+    },
+    daisyui: {
+        darkTheme: 'disabled',
     },
 } satisfies Config

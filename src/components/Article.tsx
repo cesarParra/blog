@@ -1,6 +1,7 @@
 // TODO: Rename to Post
 
 import {Card, CardTitle, CardEyebrow, CardDescription, CardCta} from "./Card.tsx";
+import {formatDate} from "../hooks/formatDate.ts";
 
 interface Article {
     title: string
@@ -10,14 +11,6 @@ interface Article {
 
 export interface ArticleWithSlug extends Article {
     slug: string
-}
-
-function formatDate(date: Date) {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
 }
 
 export function Article({ article }: { article: ArticleWithSlug }) {
