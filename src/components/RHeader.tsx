@@ -219,6 +219,7 @@ function Avatar({
 }
 
 export function RHeader({currentPath}: { currentPath: string }) {
+    // TODO: This is not correctly working for the the avatar showing big when deployed to Github Sites
     let isHomePage = currentPath === '/blog/' || currentPath === 'https://cesarparra.github.io/blog/'
 
     let headerRef = useRef<React.ElementRef<'div'>>(null)
