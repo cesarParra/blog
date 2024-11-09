@@ -88,8 +88,8 @@ function MobileNavigation(
                 </div>
                 <nav className="mt-6">
                     <ul className="-my-2 divide-y divide-slate-100 text-base text-slate-800 dark:divide-slate-100/5 dark:text-slate-300">
-                        <MobileNavItem href="/">Home</MobileNavItem>
-                        <MobileNavItem href="/blog">Blog</MobileNavItem>
+                        <MobileNavItem href="/blog">Home</MobileNavItem>
+                        <MobileNavItem href="/blog/blog">Blog</MobileNavItem>
                     </ul>
                 </nav>
             </PopoverPanel>
@@ -133,8 +133,8 @@ function DesktopNavigation(props: React.ComponentPropsWithoutRef<'nav'> & { curr
     return (
         <nav {...props}>
             <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-slate-800 shadow-lg shadow-slate-800/5 ring-1 ring-slate-900/5 backdrop-blur dark:bg-slate-800/90 dark:text-slate-200 dark:ring-white/10">
-                <NavItem currentPath={props.currentpath} href="/">Home</NavItem>
-                <NavItem currentPath={props.currentpath} href="/blog">Blog</NavItem>
+                <NavItem currentPath={props.currentpath} href="/blog">Home</NavItem>
+                <NavItem currentPath={props.currentpath} href="/blog/blog">Blog</NavItem>
             </ul>
         </nav>
     )
@@ -200,7 +200,7 @@ function Avatar({
 }) {
     return (
         <a
-            href="/"
+            href="/blog"
             aria-label="Home"
             className={clsx(className, 'pointer-events-auto')}
             {...props}
@@ -219,7 +219,7 @@ function Avatar({
 }
 
 export function RHeader({currentPath}: { currentPath: string }) {
-    let isHomePage = currentPath === '/'
+    let isHomePage = currentPath === '/blog/'
 
     let headerRef = useRef<React.ElementRef<'div'>>(null)
     let avatarRef = useRef<React.ElementRef<'div'>>(null)

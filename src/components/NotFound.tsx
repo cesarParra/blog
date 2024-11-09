@@ -13,7 +13,7 @@ export function NotFound() {
                 <p className="mt-4 text-base text-slate-600 dark:text-slate-400">
                     Sorry, we couldn’t find the page you’re looking for.
                 </p>
-                <a href="/" className="hover:text-orange-500 dark:hover:text-orange-400 mt-4 btn hover:bg-white">
+                <a href="/blog" className="hover:text-orange-500 dark:hover:text-orange-400 mt-4 btn hover:bg-white">
                     Go back home
                 </a>
             </div>

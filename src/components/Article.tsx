@@ -17,7 +17,7 @@ export function Article({ article }: { article: ArticleWithSlug }) {
     return (
         <article className="md:grid md:grid-cols-4 md:items-baseline">
             <Card className="md:col-span-3">
-                <CardTitle href={`/blog/${article.slug}`}>
+                <CardTitle href={`/blog/blog/${article.slug}`}>
                     {article.title}
                 </CardTitle>
                 <CardEyebrow
@@ -45,7 +45,7 @@ export function Article({ article }: { article: ArticleWithSlug }) {
 export function ArticleCondensed({ article }: { article: ArticleWithSlug }) {
     return (
         <Card as="article">
-            <CardTitle href={`/blog/${article.slug}`}>
+            <CardTitle href={`/blog/blog/${article.slug}`}>
                 {article.title}
             </CardTitle>
             <CardEyebrow as="time" dateTime={formatDate(article.date)} decorate>
