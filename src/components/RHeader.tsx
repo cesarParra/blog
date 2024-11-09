@@ -219,7 +219,7 @@ function Avatar({
 }
 
 export function RHeader({currentPath}: { currentPath: string }) {
-    let isHomePage = currentPath === '/blog/'
+    let isHomePage = currentPath === '/blog/' || currentPath === 'https://cesarparra.github.io/blog/'
 
     let headerRef = useRef<React.ElementRef<'div'>>(null)
     let avatarRef = useRef<React.ElementRef<'div'>>(null)
