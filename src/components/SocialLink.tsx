@@ -8,7 +8,7 @@ export function SocialLink({
 }) {
     return (
         <a className="group -m-1 p-1" {...props}>
-            <Icon className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300" />
+            <Icon className="h-6 w-6 fill-slate-500 transition group-hover:fill-slate-600 dark:fill-slate-400 dark:group-hover:fill-slate-300" />
         </a>
     )
 }

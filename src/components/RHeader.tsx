@@ -64,30 +64,30 @@ function MobileNavigation(
     return (
         <Popover {...props}>
             <PopoverButton
-                className="group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20">
+                className="group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-slate-800 shadow-lg shadow-slate-800/5 ring-1 ring-slate-900/5 backdrop-blur dark:bg-slate-800/90 dark:text-slate-200 dark:ring-white/10 dark:hover:ring-white/20">
                 Menu
                 <ChevronDownIcon
-                    className="ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400"/>
+                    className="ml-3 h-auto w-2 stroke-slate-500 group-hover:stroke-slate-700 dark:group-hover:stroke-slate-400"/>
             </PopoverButton>
             <PopoverBackdrop
                 transition
-                className="fixed inset-0 z-50 bg-zinc-800/40 backdrop-blur-sm duration-150 data-[closed]:opacity-0 data-[enter]:ease-out data-[leave]:ease-in dark:bg-black/80"
+                className="fixed inset-0 z-50 bg-slate-800/40 backdrop-blur-sm duration-150 data-[closed]:opacity-0 data-[enter]:ease-out data-[leave]:ease-in dark:bg-black/80"
             />
             <PopoverPanel
                 focus
                 transition
-                className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 duration-150 data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:ease-out data-[leave]:ease-in dark:bg-zinc-900 dark:ring-zinc-800"
+                className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-slate-900/5 duration-150 data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:ease-out data-[leave]:ease-in dark:bg-slate-900 dark:ring-slate-800"
             >
                 <div className="flex flex-row-reverse items-center justify-between">
                     <PopoverButton aria-label="Close menu" className="-m-1 p-1">
-                        <CloseIcon className="h-6 w-6 text-zinc-500 dark:text-zinc-400"/>
+                        <CloseIcon className="h-6 w-6 text-slate-500 dark:text-slate-400"/>
                     </PopoverButton>
-                    <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                    <h2 className="text-sm font-medium text-slate-600 dark:text-slate-400">
                         Navigation
                     </h2>
                 </div>
                 <nav className="mt-6">
-                    <ul className="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300">
+                    <ul className="-my-2 divide-y divide-slate-100 text-base text-slate-800 dark:divide-slate-100/5 dark:text-slate-300">
                         <MobileNavItem href="/">Home</MobileNavItem>
                         <MobileNavItem href="/blog">Blog</MobileNavItem>
                     </ul>
@@ -115,14 +115,14 @@ function NavItem({
                 className={clsx(
                     'relative block px-3 py-2 transition',
                     isActive
-                        ? 'text-teal-500 dark:text-teal-400'
-                        : 'hover:text-teal-500 dark:hover:text-teal-400',
+                        ? 'text-orange-500 dark:text-orange-400'
+                        : 'hover:text-orange-500 dark:hover:text-orange-400',
                 )}
             >
                 {children}
                 {isActive && (
                     <span
-                        className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0"/>
+                        className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-orange-500/0 via-orange-500/40 to-orange-500/0 dark:from-orange-400/0 dark:via-orange-400/40 dark:to-orange-400/0"/>
                 )}
             </a>
         </li>
@@ -132,7 +132,7 @@ function NavItem({
 function DesktopNavigation(props: React.ComponentPropsWithoutRef<'nav'> & { currentpath: string }) {
     return (
         <nav {...props}>
-            <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+            <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-slate-800 shadow-lg shadow-slate-800/5 ring-1 ring-slate-900/5 backdrop-blur dark:bg-slate-800/90 dark:text-slate-200 dark:ring-white/10">
                 <NavItem currentPath={props.currentpath} href="/">Home</NavItem>
                 <NavItem currentPath={props.currentpath} href="/blog">Blog</NavItem>
             </ul>
@@ -160,7 +160,7 @@ function ThemeToggle() {
                     d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
             </svg>
             <svg
-                className="swap-off h-6 w-6 fill-zinc-900"
+                className="swap-off h-6 w-6 fill-slate-900"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24">
                 <path
@@ -184,7 +184,7 @@ function AvatarContainer({
         <div
             className={clsx(
                 className,
-                'h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10',
+                'h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-slate-800/5 ring-1 ring-slate-900/5 backdrop-blur dark:bg-slate-800/90 dark:ring-white/10',
             )}
             {...props}
         />
@@ -210,7 +210,7 @@ function Avatar({
                 alt=""
                 sizes={large ? '4rem' : '2.25rem'}
                 className={clsx(
-                    'rounded-full bg-zinc-100 object-cover dark:bg-zinc-800',
+                    'rounded-full bg-slate-100 object-cover dark:bg-slate-800',
                     large ? 'h-16 w-16' : 'h-9 w-9',
                 )}
             />

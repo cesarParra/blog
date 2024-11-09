@@ -21,11 +21,11 @@ const posts = (await getCollection('blog')).sort(
 <Main title={SITE_TITLE} description={SITE_DESCRIPTION}>
     <Container className="mt-16 sm:mt-32">
         <header class="max-w-2xl">
-            <h1 class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+            <h1 class="text-4xl font-bold tracking-tight text-slate-800 sm:text-5xl dark:text-slate-100">
                 The blog.
             </h1>
         </header>
-        <div class="mt-16 sm:mt-20 md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
+        <div class="mt-16 sm:mt-20 md:border-l md:border-slate-100 md:pl-6 md:dark:border-slate-700/40">
             <div class="flex max-w-3xl flex-col space-y-16">
                 {posts.map((post) => (
                         <Article article={post}/>
