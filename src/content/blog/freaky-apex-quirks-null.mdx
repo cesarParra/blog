@@ -1,0 +1,81 @@
+---
+author: 'Cesar Parra'
+title: 'Freaky Apex Quirks: The Null That’s Not Null'
+description: "Apex is a powerful tool, but it does have its quirks. Let's explore how nulls aren't always what they seem."
+pubDate: 'Nov 11 2024'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+We all know that Apex is the most powerful tool we have to customize and extend Salesforce and,
+even though I find myself frustrated with the slow speed in which the language evolves compared to modern languages,
+I'm still impressed by the fact that Salesforce allows us to do some of the things we can do with Apex.
+
+But with all of its power, Apex does have its quirks. Writing and maintaining a programming language is hard,
+and the Apex team has the tough task of also wanting to maintain backwards compatibility for a very long time (maybe forever).
+This means that sometimes Apex is going to behave…weirdly.
+
+While Apex is definitely not even remotely close to being as weird as Javascript, it does have its examples of weirdness.
+Here's one way I have found myself saying WTF Apex! (Wow, That’s Freaky Apex!).
+
+## The Null That’s Not Null
+
+A few years ago the Safe Navigator Operator (?.) came to Apex. This now allows us to
+safely reference methods and properties of an object that might be null.
+
+```apex
+List<String> thisListIsNull;
+System.debug(thisListIsNull?.size()); // This is null, of course
+```
+
+At the same time Apex, like any programming language in the world,
+also allows us to do comparisons between numbers, so we can do something like:
+
+```apex
+System.debug(1 == 0); // This is false, of course
+System.debug(1 > 0); // This is true, of course
+```
+
+And if you do this, you’ll obviously get an exception:
+
+```apex
+System.debug(null == 0); // False, which makes sense since they are not equals
+System.debug(null > 0); // Throws a compilation error, of course
+```
+
+So what happens when you combine the two concepts? A WTF!
+
+```apex
+List<String> thisListIsNull;
+System.debug(thisListIsNull?.size() == 0); // false -> Which, again makes sense since null is not eqauls to 0
+System.debug(thisListIsNull?.size() <= 0); // false -> WTF!, this should have been a compilation error
+```
+
+Now, I don’t want to blame the Safe Navigator Operator too much, let’s check out another iteration of
+the same concept, and get some more freaky stuff through different means.
+
+```apex
+Integer nullInteger;
+System.debug(nullInteger); // null, obviously
+System.debug(nullInteger <= 0); // false, WTF?!
+
+// But check this out:
+
+System.debug(null <= 0); // This bombs! Even though the line before is essentially the same thing and does not bomb
+```
+
+******
+
+NERD ALERT, do not read below this point, you have been warned ⚠️
+
+I think I know what the issue is behind the scenes, but that requires me to talk a little bit about programming
+language theory. The issue is that I am declaring the variable as an `Integer` , if I declare the variable as
+anything else then Apex throws a compilation error, as expected.
+
+When a piece of code gets interpreted by a language compiler, there are 2 passes that occur (there are more,
+but this is a gross oversimplification): compilation and runtime. Compilation is when the compiler tries to figure out
+what the text (the code) means, and runtime occurs when the code is actually running.
+
+What seems to be happening is that the Apex compiler only has a compile time check to see if the comparison
+operations (`==`, `>=`, `<=`, etc.) are using matching types, but they didn't do any runtime checks. So, because I
+am declaring the variable as an `Integer` , the compilation pass does not throw any errors, it lets
+the code run, and it seems that the runtime code simply returns false when it doesn't know what to do.
