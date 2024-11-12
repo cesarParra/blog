@@ -2,6 +2,7 @@
 import {RHeader} from './RHeader.tsx';
 
 const currentPath = Astro.url.pathname;
+const {isHomePage} = Astro.props;
 ---
 
-<RHeader currentPath={currentPath} client:only="react" />
+<RHeader currentPath={currentPath} isHomePage={isHomePage} client:only="react"/>

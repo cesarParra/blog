@@ -106,7 +106,7 @@ function NavItem({
     href: string
     children: React.ReactNode
 }) {
-    let isActive = currentPath === href
+    let isActive = currentPath.replace(/\/$/, '') === href.replace(/\/$/, '')
 
     return (
         <li>
@@ -218,10 +218,7 @@ function Avatar({
     )
 }
 
-export function RHeader({currentPath}: { currentPath: string }) {
-    // TODO: This is not correctly working for the the avatar showing big when deployed to Github Sites
-    let isHomePage = currentPath === '/blog/' || currentPath === 'https://cesarparra.github.io/blog/'
-
+export function RHeader({currentPath, isHomePage}: { currentPath: string, isHomePage: boolean }) {
     let headerRef = useRef<React.ElementRef<'div'>>(null)
     let avatarRef = useRef<React.ElementRef<'div'>>(null)
     let isInitial = useRef(true)

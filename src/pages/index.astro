@@ -20,7 +20,7 @@ const posts = (await getCollection('blog')).sort(
     .slice(0, 5);
 ---
 
-<Main title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<Main title={SITE_TITLE} description={SITE_DESCRIPTION} isHomePage>
     <main class="mt-16">
         <Container>
             <div class="max-w-2xl">

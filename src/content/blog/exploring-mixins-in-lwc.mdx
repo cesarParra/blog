@@ -1,0 +1,340 @@
+---
+author: 'Cesar Parra'
+title: 'Exploring Mixins in LWC'
+description: "Mixins are a pattern that lets you share code between classes. In this sense they are similar to inheritance, but with the added benefit of allowing you to compose several mixins together, esentially letting you inherit the behavior of multiple classes. Let's explore how to use them in LWC."
+pubDate: 'Nov 12 2024'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+import Info from '../../components/Info.astro';
+import Note from '../../components/Note.astro';
+
+Mixins are a pattern that lets you share code between classes. In this sense they are similar to inheritance, but with the added benefit of allowing you to compose several mixins together, esentially letting you inherit the behavior of multiple classes.
+
+If you’ve worked with LWCs in the past, you are probably familiar with the [Lightning Navigation](https://developer.salesforce.com/docs/component-library/bundle/lightning-navigation/documentation) mixin. This mixin extends the behavior of the `LightningElement` class, which all LWC classes should inherit, and “mixes in” a few methods to navigate between pages or generate URLs.
+
+Because mixins take advantage of base JavaScript functionality, this means that, just like Salesforce did with the `NavigationMixin`,
+we can create our own mixins to share or extend our Lightning Web Components behavior. Let’s play around with this and see what we achieve.
+
+First, defining a mixin looks as follows:
+
+```javascript
+const SampleMixin = (Base) => class extends Base {/*...*/}
+```
+
+This might look…*weird*. Essentially we can take advantage of the fact that, in Javascript, the `class` keyword can be used as an expression. This means that a new class is returned any time it is evaluated. Additionally, `extends` accepts any expression that returns a class or constructor,
+which allows us to pass our dynamic `Base` function argument to be extended.
+
+Within your mixin you can now add any functionality you would like to reuse
+
+```jsx
+const SampleMixin = (Base) => class extends Base {
+  extraFunctionality() {
+    console.log('From the mixin');
+  }
+}
+```
+
+And use it as follows:
+
+```javascript
+import {LightningElement} from 'lwc';
+
+export default class ExampleLwcElement extends SampleMixin(LightningElement) {
+  connectedCallback() {
+	  this.extraFunctionality();
+	}
+}
+```
+
+## How is this useful?
+
+In reality, we can achieve the same behavior as our example above by using simple inheritance, by creating a new base class that extends from `LightningElement` and adding our `extraFunctionality`.
+
+```jsx
+// newBase.js
+import {LightningElement} from 'lwc';
+
+export class NewBase extends LightningElement {
+  extraFunctionality() {
+    console.log('From the mixin');
+  }
+}
+
+// myComponent.js
+import {NewBase} from 'c/newBase';
+
+export default class MyComponent extends NewBase {/*...*/}
+```
+
+So, how are mixins of any use?
+
+As previously mentioned, one of the key advantages of mixins is that it essentially grants you the ability to inherit
+from multiple places. As you can see from the `SampleMixin` example above, we are both “inheriting” from `LightningElement` as well as our `SampleMixin`.
+
+If we go the route of creating a new base class now, if we have a lot of reusable code we’d like to share across our components, we are forced to add everything to the new base.
+
+Mixins give you the ability to compose them together, meaning you can create independent mixins with a single responsibility, and then mix-and-match them to get only the behavior your particular component needs.
+
+```javascript
+const Mixin1 = (Base) => class extends Base {
+  addedFunctionality1() {
+    console.log('Mixin1 added functionality');
+  }
+}
+
+const Mixin2 = (Base) => class extends Base {
+  addedFunctionality2() {
+    console.log('Mixin2 added functionality');
+  }
+}
+
+class ExampleLwcElement extends Mixin1(Mixin2(LightningElement)) {
+  connectedCallback() {
+    this.addedFunctionality1();
+    this.addedFunctionality2();
+  }
+}
+
+// Console output:
+// >> Mixin1 added functionality
+// >> Mixin2 added functionality
+```
+
+## Use Cases
+
+Let’s go through some use cases where mixins could provide an elegant solution.
+
+### Loading a static resource
+
+Sometimes we have a static resource that we’d like to load on several components. It could be that we are using a 3rd party library like `Lodash` or `Zod`, or we’d like to load some global CSS styles.
+
+We can use Salesforce’s `loadScript` or `loadStyle` helpers for this, but ideally we can avoid duplicating this call for every component that needs to load the resource.
+
+We can create a mixin that does this for us
+
+```jsx
+// staticResourceMixin.js
+import {LightningElement} from 'lwc';
+import {loadScript} from "lightning/platformResourceLoader";
+import service from '@salesforce/resourceUrl/JSService';
+
+export const StaticResourceMixin = (Base = LightningElement) => class extends Base {
+  connectedCallback() {
+    loadScript(this, `${service}/js/service.js`).then(() => {
+      // script is ready to be used.
+    });
+  }
+};
+
+```
+
+And then reuse it wherever we’d like to use it
+
+```javascript
+import {LightningElement} from 'lwc';
+import {StaticResourceMixin} from 'c/staticResourceMixin';
+
+export default class MyComponent extends StaticResourceMixin(LightningElement) {
+  foo() {
+    MyStaticResourceService.doSomething();
+  }
+}
+```
+
+### Sharing “context”
+
+Another common scenario is needing to make similar calls to the database to get information that multiple components need. Here, as well, we can create a mixin that loads the data, and then can be used by multiple components.
+
+```javascript
+// sharedContextMixin.js
+import {LightningElement, wire} from 'lwc';
+import getShoppingCart from '@salesforce/apex/ShoppingCartController.getShoppingCart';
+
+export const SharedContextMixin = (Base = LightningElement) => class extends Base {
+  shoppingCartData;
+
+  @wire(getShoppingCart)
+  shoppingCart({data, error}) {
+    if (data) {
+      this.shoppingCartData = data;
+    } else if (error) {
+      console.error('Error loading shopping cart data', error);
+    }
+  }
+};
+```
+
+This can be used as follows
+
+```javascript
+import {LightningElement} from 'lwc';
+import {SharedContextMixin} from "c/sharedContextMixin";
+
+export default class MyComponent extends SharedContextMixin(LightningElement) {
+  foo() {
+    console.log(this.shoppingCartData);
+  }
+}
+```
+
+Notice how in our mixin we can use constructs such as `@wire` adapters, as well as introduce new properties that will then be accessible by the component class.
+
+## Some Potential Issues (and solutions)
+
+Mixins works great when we are unique new functions and properties, but there are some potential gotchas
+when overriding functions or when mixing multiple mixins together.
+
+### Lifecycle Hooks
+
+The first potential issue is when using a lifecycle hook, as in our static resource sample use case, where we use `connectedCallback`.
+
+The ability to use a lifecycle hook within the mixin to control what happens at all times is great, as it gives you the ability to ensure that something happens when you want it to happen. But the issue is that if the subclass overrides the function for its own purposes, the mixin’s hook won’t get called.
+
+One way to solve this is by remembering to call `super`
+
+```javascript
+import {LightningElement} from 'lwc';
+import {StaticResourceMixin} from 'c/staticResourceMixin';
+
+export default class MyComponent extends StaticResourceMixin(LightningElement) {
+  connectedCallback() {
+    super.connectedCallback();
+    // this component's logic here
+  }
+}
+```
+
+There are a couple of issues with this solution. First, the human brain is bad at remembering things, so it is very possible we’ll just forget and then have a bad time trying to debug why is the mixin not working.
+
+The second issue is that now the mixin consumer has control over when and how to call `super`. In our static resource use case we probably want our resource to load before anything else happens with the component,
+but the consumer can call `super` at the end of their own logic (not to mention that, because `loadScript` is a Promise, it might have not resolved when the consumer tries to use the resource).
+
+So a better solution is doing the following:
+
+1. Refactor the mixin to give it control over when the hook should be called:
+
+```javascript
+import {LightningElement} from 'lwc';
+import {loadScript} from "lightning/platformResourceLoader";
+import service from '@salesforce/resourceUrl/JSService';
+
+export const StaticResourceMixin = (Base = LightningElement) => class extends Base {
+  connectedCallback() {
+    loadScript(this, `${service}/js/service.js`).then(() => {
+      super.connectedCallback?.(); // --> this is the change
+    });
+  }
+};
+```
+
+2. In the component class, separate the class declaration from the `export` , and mix-in the class itself.
+
+```javascript
+class MyComponent extends LightningElement { // --> notice: no export, extends LightningElement
+  connectedCallback() {
+    // regular code, no need to call super
+  }
+}
+
+export default StaticResourceMixin(MyComponent); // --> exports a mixin of the component class
+```
+
+This solution is now a lot more flexible. It allows the mixin to control when to call the hook, and there’s no need to remember to call super when overriding the same hooks as the mixin.
+
+Granted, the consumer now needs to remember to avoid to inline the export syntax, but there’s still less risk. The hook code has a higher likelihood of changing, and with every change there’s the chance of missing or misplacing the `super` call. While the `export` statement is something that will probably never need to change.
+
+### Conflicts
+
+Another potential issue with mixins can occur when using multiple mixins with the same method names.
+
+For example, say we have `Mixin1`  and `Mixin2` and both provide a function `foo`.
+
+```javascript
+class Base {}
+
+const Mixin1 = (Base) => class extends Base {
+  foo() {
+    console.log('Mixin1');
+  }
+}
+
+const Mixin2 = (Base) => class extends Base {
+  foo() {
+    console.log('Mixin2');
+  }
+}
+
+class ExampleLwcElement extends Mixin1(Mixin2(Base)) {
+  connectedCallback() {
+    this.foo();
+  }
+}
+
+new ExampleLwcElement().foo();
+
+// Console output:
+// >> Mixin1
+```
+
+If handled properly by each mixin, only one of the functions will be called.
+
+<Info>
+Also notice that the order in which the mixins are called matters!
+</Info>
+
+The solution for this is to ensure that the mixins always calls any potential `super`that might exist for that function name.
+
+```javascript
+const Mixin = (Base) => class extends Base {
+  foo() {
+    console.log('Mixin');
+    super.foo?.(); // Make sure to call if it exists
+  }
+}
+```
+
+## Enhanced Syntax
+
+Composing multiple mixins can get confusing really fast, so an improved way of “mixing things up” is by creating a simple builder class and a factory function for it:
+
+```javascript
+// mix.js
+export const mix = (superclass) => new MixinBuilder(superclass);
+
+class MixinBuilder {
+  constructor(superclass) {
+    this.superclass = superclass;
+  }
+
+  with(...mixins) {
+    return mixins.reduce((c, mixin) => mixin(c), this.superclass);
+  }
+}
+
+```
+
+```javascript
+// component code
+import {LightningElement} from 'lwc';
+import {StaticResourceMixin} from "c/staticResourceMixin";
+import {SharedContextMixin} from "c/sharedContextMixin";
+import {mix} from 'c/mix';
+
+class MyComponent extends LightningElement {}
+
+export default mix(MyComponent).with(StaticResourceMixin, SharedContextMixin);
+```
+
+<Note>
+Full credit goes to https://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/
+</Note>
+
+## Further Reading
+
+For more on mixins, use cases and inspiration, check out these excellent resources:
+
+- https://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/
+- https://justinfagnani.com/2016/01/07/enhancing-mixins-with-decorator-functions/
+- https://component.kitchen/elix/mixins
+- https://lit.dev/docs/composition/mixins/
