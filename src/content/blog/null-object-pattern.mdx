@@ -1,0 +1,211 @@
+---
+author: 'Cesar Parra'
+title: 'Feature Toggling with the Null Object Pattern in Apex'
+description: "TODO"
+pubDate: 'Nov 19 2024'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+import Note from '../../components/Note.astro';
+
+[Feature toggles](https://en.wikipedia.org/wiki/Feature_toggle) allow us to do a lot of good things,
+like having continuous integration to be able to merge into *development* or *main* without needing to finish the development
+of a feature (i.e. even if the feature is not done, we can ship it as off while we finish),
+track how much usage our features are getting, quickly turn off changes in case the new feature has introduced regression issues, etc.
+
+Now, the one thing about feature toggles is that they kind of force us to use a bunch of different
+if/else statements and if/else statements are not really ideal.
+
+<Note>
+Why "if" statements are bad requires its own post, but the gist is that it makes concepts harder to reason about, because they make us have to keep track and understand multiple branching concepts at the same time, which the human brain is pretty bad at
+</Note>
+
+If you've ever had to debug code that has feature toggling logic, you probably know what I'm talking about.
+The code is pretty ugly, it is challenging to test, and it's pretty much impossible to understand what are
+all the different things that you have to turn on to be able to have the feature working.
+
+So let's discuss techniques that we can use to help us out, let's talk about the nerdiest thing of all: patterns!
+Specifically, I want to talk about the Null Object design pattern and how we can leverage it when introducing features
+that should be behind toggles.
+
+If you are not familiar with it, the [Null Object pattern](https://sourcemaking.com/design_patterns/null_object)
+is pretty much what it sounds, it's all about introducing objects that decide that the best thing to do is nothing.
+
+The reason they are pretty nifty is because you can call them as if they did something,
+which means you won't have all the branching logic, while at the same time they won't present any side effects.
+
+## Example
+
+So, let's see some code. Let's imagine that we are implementing a **Wallet** feature for a payment collection system. The requirements are the following:
+
+- Accounts will have a **Wallet**, which will be either a positive or negative monetary amount (or zero), that can be used to store a credit that users can have.
+- The idea is that users can be charged money now which will go into their Wallet, so later, when collecting money, we can charge from that wallet rather than their payment method.
+- On the other hand, for a small fee, we can also lend money to users by allowing them to “charge” the Wallet, and create a Payment linked to the Wallet, rather than linked to a Credit Card. This means the Wallet can go into a negative number, which users can pay later.
+
+The trick is that calculating the Wallet amount won't be so simple. This amount needs to be calculated from a mix of past
+purchases and their standing status (i.e., if they owe us a lot of money).
+
+At the same time, our app is super popular, so we have a lot of clients that we need to support (🤞),
+which means we are constantly fixing bugs and making improvements to the app.
+We want to keep shipping those to our clients regularly, even if the Wallet feature has not been completed.
+
+## Implementation
+
+<Note>
+For the example of this post, we are assuming that we have access to the Account (or Contact, or whichever object,
+but in this case we are going with Account) that is paying, as well as the history of their payments.
+</Note>
+
+Since our Wallet's amount will be calculated based on information coming from the Account object,
+that sounds like a perfect place to track whether the customer has a credit or not for their purchase.
+
+We'll start by creating a `Customer` class, which will wrap an Account which is where we will be
+betting the information about the user’s credit and their payment history.
+
+```apex
+public class Customer {
+    private final Account accountRecord;
+
+	    public Customer(Account accountToWrap) {
+		    this.accountRecord = accountToWrap;
+	    }
+
+	    public Wallet getWallet() {
+		    return new Wallet();
+    }
+}
+```
+
+I got ahead of myself and added a `getWallet` method, which returns a `Wallet` object, which we don't have yet, so let's go ahead and create it:
+
+```apex
+public class Wallet {
+	public Decimal getAmount() {
+		// TODO: Super complex math using all of the requirements. Oh boy!
+		return null;
+	}
+}
+```
+
+Easy enough!
+
+To keep things simple, our stakeholder is asking that when calculating the balance’s
+remaining amount for a payment, we should simply go ahead and always add the Wallet’s balance
+to the total. So if they have money in there, it will be credited, if they owe us money, it will be added to the balance.
+
+So with that, we can update our balance logic as follows:
+
+```apex
+//...
+// The get balance method
+//...
+
+// Let's assume that we have a method that we can use to get the customer information
+// for the person who will be paying
+Customer payingCustomer = customerRepository.getCustomerForBillable(billable);
+
+// Our existing logic
+Decimal remainingAmount = (billable.amount - paymentsTotal) + refundsTotal;
+
+// Logic for the new feature
+remainingAmount += payingCustomer.getWallet().getAmount();
+```
+
+Done, ship it!
+
+But wait a minute; I thought this blog post was all about the Null Object pattern?!?!
+
+Oh, that's right! We can't ship this, we have to test this, validate it as a pilot/beta,
+and make sure it's up to our standards of quality. Let's back up.
+
+First of all, our `Wallet` implementation has a giant **TODO**. We've yet to even start with the most complex part of the problem!
+
+So, knowing that it will take quite a while to implement the math for this project, let's add our Feature Toggle
+so we can ship the rest of the code safely while we finish the feature.
+
+We'll start by creating a service to check if the toggle is on or not:
+
+```apex
+public class WalletFeatureService {
+	public static Boolean isOn() {
+		return FeatureManagement.checkPackageBooleanValue('Wallet');
+	}
+}
+```
+
+As you can see, I’m assuming that we are setting the toggle using base Salesforce,
+using [Feature Management](https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/fma_manage_features.htm).
+
+But hey, it’s just a boolean, we could just as easily implement a custom toggling solution ourselves through Custom Metadata.
+
+```apex
+public class WalletFeatureService {
+	public static Boolean isOn() {
+		FeatureToggle__mdt.getInstance('Wallet').IsEnabled__c;
+	}
+}
+```
+
+The next thing is buying ourselves some precious, precious time, by being able to turn on or
+off the wallet feature without introducing regressions while we are working. To achieve this we'll create the Null
+Object implementation for the Wallet class, for which we'll need a bit of refactoring. Let's take it step by step:
+
+```apex
+// 1. Create an interface so we can have different types of wallets
+public interface IWallet {
+	Decimal getAmount();
+}
+
+// 2. Refactor the existing wallet to implement this interface
+public class Wallet implements IWallet {/*...*/}
+
+// 3. Create the the wallet Null Object. In this case our "Null" object's
+// behavior will to always return 0 for the amount.
+public class NullWallet implements IWallet {
+	public Decimal getAmount() {
+		return 0;
+	}
+}
+```
+
+At this point, we still have one big step to take, which is putting it all together. Right now our `Customer` class
+is hardcoded to always use the same `IWallet` object. We know this is hardcoded because we are using the `new` keyword in there, which means we have no means of doing dependency injection. To fix this we have to do a bit more of refactoring, for which we'll use yet another design pattern to move that pesky `new` somewhere else, the Factory object:
+
+```apex
+public class WalletFactory {
+	public static IWallet forAccount(Account walletOwner) {
+		return WalletFeatureService.isOn() ? new Wallet(walletOwner) : new NullWallet();
+	}
+}
+```
+
+And we will now build Wallets exclusively through the Factory
+
+```apex
+// Customer
+// ...
+
+public IWallet getWallet() {
+	return WalletFactory.forAccount(this.accountRecord);
+}
+
+//...
+```
+
+Now, we are done. We'll, at least we can ship it.
+
+The point is to be able to avoid any kind of branching code (if/else statements, switch cases) as much as possible.
+We implement the functionality as if the Wallet feature is always on, which makes the code where we calculate the balance pretty simple.
+
+We also keep our responsibilities in check (SRP is the 🐐 of the SOLID principles).
+It is not the responsibility of the balance calculator to know if that feature is on or not,
+so it should never have any kind of Feature Enablement logic in it! Nevertheless, that class will now respect the
+toggle even if it doesn’t know it, because when it is off the `Wallet` will always act as if the account has no money,
+just like it used to before this feature even existed.
+
+Of course, this pattern won't solve all toggling problems. For instance, we (might) still have to make s
+ure that things are correctly displayed/hidden in the UI. But this can at least help with the main domain logic,
+where the riskier part of the application lives.
+
+And for much, much more about feature toggles/flags than you thought you would ever need, give
+this a read https://martinfowler.com/articles/feature-toggles.html.
