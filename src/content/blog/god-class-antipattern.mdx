@@ -1,0 +1,61 @@
+---
+author: 'Cesar Parra'
+title: 'Anti-Pattern: God Classes'
+description: "Exploring the God Class anti-pattern and why it's bad for your codebase."
+pubDate: 'Nov 26 2024'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+import Note from '../../components/Note.astro';
+
+A lot of us are familiar with design patterns, which are typical solutions to recurring problems we see in software.
+Just like there are patterns that emerge over time and can help you solve common problems, there are also anti-patterns
+which, on the other hand, usually need to some kind of negative consequence.
+
+One of these anti-patterns is the God Class (aka God Object). These are classes or objects that are responsible
+for doing too much within the application. They depend on everything, are depended upon by everything or, worse, both.
+
+We call them Gods, but don’t be fooled by their name, they are evil.
+
+We call them Gods because they are all-powerful and can control everything. This might sound like a good thing,
+however, as the complexity of the program increases, these classes become harder to maintain, debug, and test, leading to code that is difficult to understand and modify.
+
+One of the main reasons why God classes are an antipattern is that they violate SRP - Single Responsibility Principle - and remember, this is the 🐐 of the SOLID principles. The SRP states that a class should have only one reason to change, which (usually) equates to having one responsibility or functionality. If a class is responsible for too many things, it becomes challenging to modify or test its code, and it becomes a significant source of errors and bugs.
+
+But why?
+
+Why is this bad? I can just tell you that they violate some principle or other and
+you can just believe me that that’s a bad thing, but it’s more important to understand the real consequences of the practice. Here are a few reasons:
+
+- **Difficult to understand.** God classes can be challenging to understand because they contain a lot of functionality in a single place. Developers may need to spend a considerable amount of time understanding how the class works, how its methods and properties interact with each other, and what it does in the overall context of the application.
+- **This make them brittle.** If a class is doing way too much, it also probably has a bunch of interdependent methods and fields (i.e. properties and variables). Making a small change to any part of this code cause have side-effects that the developer making the changing may not fully understand.
+- **Hard to maintain.** All of this make them hard to maintain. Because they are so big then there’s a lot of code that depend on them which, again, means that changes might have a lot of consequences. This makes them hard to reason about since you might need to know how all of its dependents are using it, and makes them scary to change, since no one wants to break something without realizing.
+- **Increased coupling.** Because they have so many responsibilities, other classes and components in the application may rely heavily on them, making it challenging to make changes without affecting other parts of the application.
+- **Testing difficulties.** All of its responsibilities make them difficult to test. Testing one part of the class may require setting up a complex state for the other parts of the class to function properly, making it time-consuming and error-prone.
+
+So, what can you do about it?
+
+The main thing is to keep an eye for classes that are growing out of control. If every time that you need to make a
+change to the system you find yourself editing the same class over and over, then that’s a sign that that class is violating SRP, because it has many reasons to change.
+
+Additionally, keep an eye for a particular code-smell (yes, code has a smell, but only when it is stinky): the class name.
+
+God classes usually have a very generic class name, which really attracts people to them and makes us want
+to add more and more things to them. It's difficult to find a place where to put things, and we (developers) are too lazy to go through the struggles of creating yet another class just to put a small thing, so we tend to look for places that already exist where we can dump our new thing (maybe instead of God classes they should be called Dumpster Classes 🤔). Classes with a generic name give us the perfect excuse to put more things in them without feeling guilty by the fact that our code doesn't belong there.
+
+Keep an eye out for names containing:
+
+- Managers
+- Utils
+- Helper
+- Processor
+- Service
+
+<Note>
+"Controller" can be problematic as well, but in the word of Salesforce they mean something very specific,
+so they are fine as long as we limit their responsibility to only being a proxy between the UI and the code
+that governs the business use cases.
+</Note>
+
+
+Now, if you see a class that contains one of those words in the name, it doesn’t necessarily mean its a bad thing. But…yeah, it usually is. There are definitely better names that we can come up with that really help define a single responsibility. Spend a little time thinking and come up with a better name.
