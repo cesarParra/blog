@@ -1,0 +1,220 @@
+---
+author: 'Cesar Parra'
+title: 'Leading an Effective Team'
+description: "A summary of the guidelines I personally follow and believe are successful to lead a team effectively."
+pubDate: 'Dec 08 2024'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+import Note from '../../components/Note.astro';
+
+<Note>
+  I wrote this post during a period where a few of my peers were being promoted to team leads, and I wanted to share
+  some of the things I've learned over the years. I hope this is helpful to others.
+</Note>
+
+In this post I summarize the guidelines I personally follow and believe are successful to lead a team effectively.
+
+Leading a team requires interacting with a lot of different people in a lot of different roles within the organization,
+not only with the members of your team, so this document is broken into sections specifying how to best work and
+communicate with people in those roles.
+
+Being a team lead means that you are now expected to be good not only writing code, but at a number of other varied skills as well. For each section I detail some of the knowledge you will now have to have to be effective at this role.
+
+## Navigating the Organization
+
+As a lead, your main responsibility is to ensure the success of the project you are currently leading. This might sound like the only thing you need to do is work with PMs, QA and the engineers currently involved with that project, but that is far from the truth. The reality is that you will need to know how to navigate the entire organization to be able to be successful.
+
+### Understand your Place
+
+Start by understanding your place within the organization, and where do you fit. Understand what is the larger vision, and how does the project you are leading fits into the vision.
+
+Build a map of the organization. Get familiar with names and faces of people in key roles. Understand who is in charge of what, who usually resolves which types of problems, and keep an eye for relationships between these key players (who communicates with who or who goes to who to get their issues solved).
+
+Use this knowledge to create your own circle of trust. The people in the circle that you build will be key to unblocking you whenever you have issues.
+
+For whatever project you are leading, always understand:
+
+- Why this project?
+- Why this project now?
+- Why this team for this project?
+
+### Understanding your Peers' Place
+
+Understand what others in the same position as you (other team leads) are doing. Understand the projects they are working on and how they fit (or don't fit) with what you are doing.
+
+Use this knowledge to get a better understanding on how your project fits with what they are doing, and anticipating any potential issues. Are they merging into the same branch as you and will that cause merge problems in the future? Are your solutions similar and can you share them? Are your solutions completely different and we have a technical vision problem?
+
+Also learn from your peers around how they are leading their own teams.
+
+### Working with Management
+
+Depending on your leadership style, your tenure at the company, your personal background, and many other factors, you might find yourself working with management either a lot, or not that much.
+
+But no matter how much or how little you interact with them, one thing to always remember is that there is no reason to be fearful of management. You were hired and trusted to lead a team because you have expertise that is valuable to the organization, making you the expert in your area. As an expert, management trusts you to steward the technical execution of projects, and conversations are 2 way streets: you don't have to say yes to everything they say if it goes against your technical expertise, and they don't have to accept everything you say if they deem it goes against the best interests of the organization.
+
+With that out of the way, here are some guidelines and suggestions on how to work with management.
+
+**Language**
+
+Avoid technical language. At this level of communication the details don’t matter that much. Things that matter are:
+
+- **Time**. How far along are we, how much more will it take
+- **Quality**. Management cares about quality because low quality directly impacts the perception of the product. But always remember that at this level the specific details don’t matter that much. Specific bugs (or even number of bugs) don’t matter that much, but what matters is the overall quality picture: are things getting better faster than they are getting worse.
+
+Don't ramble, be direct.
+
+When things go wrong (and they always go wrong), don't make excuses. Explain the facts and be prepared with solutions. Everyone understands when things go wrong and managers are used to things going wrong, so what is really important is not doing everything right, is **communicating as early as possible when things are going sideways, so that there is enough time to course correct.**
+
+**Estimates and Timelines**
+
+Be careful about the way you phrase estimates and progress. Prefer conservative estimates over aggressive ones. Even if you feel project/tasks are simple and quick to accomplish, don’t be too optimistic with your timelines.
+
+Never lie, don’t “pad” estimates, but you can be realistic about them without lying. When you consider all of the possible variables that are common to occur within a project, you will always get a range of estimates (optimistic, expected, pessimistic).
+
+Remember **unknowns**. Don’t assume that unknowns will just resolve themselves. Treat unknowns as risk and assume that unknowns will be difficult to resolve or delay things.
+The more unknows, the less accurate your estimate is.
+
+Set clear expectations and be firm and confident about them. If you feel your team is understaffed (or under-prepared in terms of knowledge or talent) for a project, and that will impact the timeline, be clear and transparent about that. Don’t take all of the burden on yourself to try and solve a staff issue, that is management’s job.
+
+Learn how to bargain the right way. Management’s go-to is to increase the number of resources to make things go faster, but we know that it doesn’t work like that (9 women can’t make a baby in 1 month). Management will always try to bargain, and they are really good at it (that is how they got into that position) so **make sure you understand what you need before going into any conversation, so that you don’t get convinced by whatever gets thrown back at you. Be prepared.**
+
+**Skills you'll need:**
+
+- Learn how to estimate the right way (using probabilistic analysis)
+- Hone your communication skills.
+- Listen first. Learn and practice active listening.
+- Hone speaking aloud and your writing skills.
+- Learn how to give good presentations
+- Learn when and how to say no and push back.
+- Learn which battles to fight.
+
+## Navigating the Project
+
+### Working with PMs
+
+The relationship with PM is interesting, because PMs are our peers (not our bosses!) but at the same time they have the vision for what the project should be, so in a sense they are the "captain" since they drive the requirements.
+
+This relationship entails a delicate “give-and-take” balance.
+
+#### When Communicating With PMs
+
+- Never just “do” what they say. Treat their word as recommendations on how to do something. Understand what is the **real** ask behind everything.
+- There are different types of PMs, some are very hands off, some very hands on, some like to recommend technical things, others don’t. Learn which type of PM you are working with and make sure you adapt to them and they adapt to you. Remember it is always a conversation.
+- When dealing with technical things remember that **you** are the expert.
+- Be careful about scope creep. Remember that PMs are the proxy for clients, and clients will always want more things for the same amount of money. It is on you to be careful about what you accept.
+- Do not be afraid to bargain scope or rephrase requirements. Again, remember that PMs are like clients so they think they know what they want, but most of the times they are fine with a different solution that solves their problem. Requirements are never set in stone, they are just a means to an end (solving a problem). First understand what the root problem is and then you’ll understand how to work around difficult requirements.
+- Scope and time are variable, quality is not. Believe it or not, PMs are usually fine cutting scope when necessary. They will fight you, and that’s part of their job, but when no means no they understand.
+- But (and this is important) - scope is not only about yes and no, it is also about changing strategy. Sometimes you *can* deliver, but under different parameters. Understand that requirements are flexible, what clients/PMs really want are solutions to the problems. The requirements written down are ONE way to get to the solution within certain parameters, but those parameters are oftentimes flexible and other solutions might exist. Be creative.
+
+**Skills you'll need:**
+
+- All of the skills listed in the Working with Management section
+- Learn how to be a PM. You don't need to be perfect at it, but you will need to know what the PM role entails so you can effectively understand what to ask of them and what falls on you
+- (If working in an agile project) Learn how to be an Agile Coach. You don't need to be a "certified Scrum Master" or anything like that, but you should know basically every good practice there is on how an Agile team should be run
+
+### Working with your Team
+
+#### Establish Trust
+
+- Keep communication going
+- Be tactful
+- Be mindful of background
+- Cultural background
+- Professional background
+- Don't be afraid to show weaknesses
+
+#### **Establish Values**
+
+Establish the values that you want the team to have. This varies team by team, and should represent the collective values of not just you, but also of the members of your team. Talk to them and find these out. You can even have a session with them and talk about this together, so that everyone can get behind what your team represents.
+
+The following are some of the values that I practice with my team
+
+- Transparency
+- **Ownership.** Every member of the team owns everything the team touches. This includes code, but also everyone cares about the success of the project. Everyone is able to pick each other's work. We keep the Bus Factor as high as possible.
+- Incremental Delivery
+- Kaizen
+
+#### **Clarify Communication Standards**
+
+Talk to your team about the preferred communication approach. This is something that is also unique to every single team and you will need to talk to your team to come up with an agreed upon communication standard.
+
+- Overcommunication
+- How often are you meeting?
+- How should you communicate and when (async. vs. sync)
+
+#### **Establish Processes and Practices**
+
+Come up with how you best think your team should work. This again is something that might vary slightly per team, but here are some good general practices that should always be followed:
+
+#### **Working the Board**
+
+- The board priority is from **right-to-left** and then **top-to-bottom**
+
+This means that work that is closest to being 100% done (issues to the right of the board) are our biggest priority. **We try to close that work first, before moving on to other work or continuing work that is in progress.** We do this because one of our core values is Incremental Delivery, which tells us that it is better to have some work 100% done, over having a lot of work 50% done.
+
+After right-to-left, the next priority is top-to-bottom. These means that issues at the top of the board are higher in priority that those lower.
+
+- **One thing at a time**
+
+We work on one thing at a time. Humans are bad at multi-tasking, so we try to focus on working on a single thing, and paying our full attention to doing that one thing **right**.
+
+There are cases where you might have multiple things assigned to you on the board. For example, you might pick a new issue to work on while waiting for your previous work to be code reviewed. **This is acceptable, as long as there is only one thing assigned to you per column**. If this happens remember Rule #1, and work on the thing that is most to the right of the board.
+
+- **Self-assign work**
+
+Because one of our core values is Code Ownership, this means all of us are able to work on any part of the system. This means that we do not assign work to individuals, we self-assign the work that we will be working on. Each one of us has the responsibility to understand how to accomplish anything, and if any of us don’t know how to do something we have each other’s back and can assist anybody else.
+
+If in doubt of what to work on, we see Rule #1.
+
+- **We all do Code Reviews**
+
+Each one of us has the responsibility to review each other’s code. This gives us a good understanding of what everyone else on the team is working on.
+
+- Don’t spend more than one day spinning your wheels. If you don’t know to to fix an issue RAISE IT UP! If you are stuck and for any reason you can’t move on, then unassign the ticket and pick something else up
+
+#### **Exemplify the "right" way**
+
+Even if the customer at large does not follow best practices all throughout the organization, it is the responsibility of the team (and specifically the responsibility of the lead (that's you)) to make sure that the best practices are followed within the team.
+
+As always, this vary by team and by lead, but here are some of my practices:
+
+**No broken builds. I will not be merging code that has a red build**
+
+- No test failures, even if you didn't break it
+- No static analysis issues, even if you didn't write it
+
+**Establish and Follow a Style Guide**
+
+**Always write unit tests for changes**
+
+Tests are meant to verify behavior, not for coverage. Our team doesn't care about lines and percentages covered, only about covered scenarios. "It is already covered by an existing test" is never an excuse to not write a test for a new behavior.
+
+#### **Working on a Project**
+
+When working on a new project, you can be hands on and pick some some of the tasks yourself. Don't be afraid to get your hands dirty and lead by example. The beginning of a project is full of unknowns, so it is important for you to be on the ground floor with the rest of the team, so that you can understand what they are going through.
+
+But as the project progresses and wraps up, be more hands off with picking up tickets yourself, and let the team pick them up and you oversee it.
+
+- The more the project advances the more pressure will start to mount from all over
+- **PMs** will start seeing a clearer picture of their vision, so they will have questions, recommendations, etc.
+- **QA** will start finding bugs (this is a natural, make sure to allot time for this). Make sure you are keeping a buffer as the project progresses because the more has been implemented the more things will pop up just because there now exist more code to test. At the beginning of the project there’s no pressure cause there’s no code
+- **Your engineers** will need you more and more. Because there will be more code, which means more things to manage and keep synchronized.
+- Things will start getting merged, which means managing package releases, builds, etc. Allot time for this
+
+Bottom line: Take less and less tickets yourself as the project advances
+
+#### **Practice Risk based Development**
+
+- Prioritize risky items first
+- Prototype things first. Don’t be afraid to throw away prototype code. Actually, it is encouraged
+- Deliver vertical slices.
+- Break things up as small as possible and pick up the “layer” of the cake based on risk. For example, pick the UI work first when the UX is complex, but pick the back-end first if there is a simple UI but complex logic
+
+**Skills you'll need:**
+
+- Be a great software developer
+- Ability to communicate things to people with different skill sets and skill levels
+- Time management
+- Learn how and when to delegate
+- Some management skills
