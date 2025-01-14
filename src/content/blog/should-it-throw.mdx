@@ -1,0 +1,46 @@
+---
+author: 'Cesar Parra'
+title: 'Should it Throw?'
+description: "Exceptions should be reserved for the truly exceptional, situations where really there is no recovering from."
+pubDate: 'Jan 13 2025'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+If possible, avoid throwing exceptions.
+
+Exceptions should be reserved for the truly exceptional, situations where really there is no recovering from.
+They indicate an error in the system, something went wrong with your code (meaning you have a bug 🐛),
+with the network, with the database, or on the other side of an API call.
+
+But they should not be used because “the user did something wrong”, or worse, when “I’m not sure what should happen here”.
+
+There is a big difference between something going wrong with the system, and an action resulting in your system being in a failed state which, as paradoxical as it might sound, is actually a legitimate state.
+
+To be concrete, let’s imagine we are writing a payments system, where the user might try to pay with a card which gets declined.
+
+The user’s card being declined is a perfectly valid state of the system. In the UI, the user might see an “error”, but that does not mean your code should throw an exception. The card being declined is a business use case in the domain, it is something we expect to happen. It’s not exceptional, so no exception should be thrown. Instead of throwing, your system should return the state it is in, even when it is in the “error” state from the user’s point of view.
+
+Whether something is a failure on the system or an expected (but valid) error state depends greatly on the domain and the business rules, and can be a tricky distinction to make.
+
+As a rule of thumb, an exception should be thrown when something happens that the system didn’t expect, and the user can’t recuperate from (and it is usually a signal that you should log it, because you might have a bug or the system might be down).
+
+---
+
+A tricky example: trying to open a file that does not exist. Is this an exception or an invalid state?
+
+It could be either. But in this case we know that this is a possible scenario, so I try to always err in the side of not throwing, and instead designing the code and the system in a way that makes it clear that it can happen.
+
+In the case of opening a file, you can create a function that returns either the file data, or an error state.
+When  working on a language without union types or generics (like Apex), then I would return a Response class,
+and have an enum representing what might have happened (FileReadSuccessfully, FileNotFound).
+
+```apex
+enum Status { Success, FileNotFound }
+
+class Response {
+  public Status status;
+  public String data; // Could be null if the status is not success
+}
+```
+
+That reminds the caller and/or the UI implementation to make sure to handle all possible cases. An exception hides that there might be other cases than the happy path.
