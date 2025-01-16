@@ -2,7 +2,7 @@
 author: 'Cesar Parra'
 title: 'Should it Throw?'
 description: "Exceptions should be reserved for the truly exceptional, situations where really there is no recovering from."
-pubDate: 'Jan 13 2025'
+pubDate: 'Jan 15 2025'
 heroImage: '/blog-placeholder-5.jpg'
 ---
 
@@ -44,3 +44,12 @@ class Response {
 ```
 
 That reminds the caller and/or the UI implementation to make sure to handle all possible cases. An exception hides that there might be other cases than the happy path.
+
+---
+
+The main issue with exceptions is that they are not explicit in the method signature from where they are thrown.
+You can't tell by looking at the method signature if it throws an exception or not, or which type of exception it might throw.
+It forces the developer to read the documentation or the code to know what might happen and whether they should handle it or not.
+
+If, instead, you return a value that represents the state of the system, then it is clear from the method signature that it might return an error state, and the developer is forced to handle it
+(or choose to ignore it, but at that point it is up to them).
