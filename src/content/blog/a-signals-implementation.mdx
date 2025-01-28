@@ -1,0 +1,329 @@
+---
+author: 'Cesar Parra'
+title: 'A Signals Implementation for LWC'
+description: "Implementing a state management solution in LWC based on Signals."
+pubDate: 'Jan 28 2025'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+import { Image } from 'astro:assets';
+import img1 from './images/signals/1.png';
+import img2 from './images/signals/2.png';
+import img3 from './images/signals/3.gif';
+import img4 from './images/signals/4.gif';
+import img5 from './images/signals/5.gif';
+import Note from '../../components/Note.astro';
+
+<Note>
+  This post goes through the journey of implementing the LWC Signals library.
+  If you don’t want to read through all of that, head straight to the repository: [lwc-signals](https://github.com/cesarParra/lwc-signals)
+</Note>
+
+LWC is a marvelous framework, especially compared to its predecessor. It has advanced Salesforce development, allowing us to use the latest innovations in Javascript and making our skills compatible with other popular JS frameworks like React and Vue.
+
+However, it is not without faults and has at least one major piece missing: a robust state management solution.
+
+State management refers to how an application handles and maintains data that can change over time. Without it, a key challenge we face is handling the complexity of application data while maintaining predictable behavior, which is particularly important when multiple components need to access and modify the same data. For example, when components need to share data or when a change in a component needs to trigger updates in a different one.
+
+LWC components all hold their own internal state. To share information between them, LWC relies on message passing (through pub/sub, CustomEvents, or the Lightning Message Service -LMS) for cross-component communication, where each component is responsible for ensuring their own copy of the data is up-to-date.
+
+This can be cumbersome when you have a lot of components that need to share state for many reasons:
+
+- You have to dispatch and handle the state events through all the components in the hierarchy (when using CustomEvents)
+- You have to manage the state in a parent component, which relies on having the component on the page (when using pub/sub and messages)
+- You have to make sure to manage subscriptions and unsubscriptions to events
+
+An alternative is to use the `wire` service to get the data from the server and let the framework handle the caching for you, but this only works for data that is stored in the server, and still forces you to implement a lot of boilerplate code to manage each wire adapter for each component.
+
+Looking outwards to how other JS frameworks solve this issue, a consensus has emerged: implementing state management through “signals”. Different frameworks call it different things; while it goes by Signals in Preact and SolidJS, Svelte 5 calls it Runes, while Vue 3 calls it the Composition API.
+
+But they all refer to a similar technology. They represent an approach to managing state and reactively handling events.
+
+Now, you might have noticed that we do have something like this in LWC. Within a component, we can store values through class properties, and these are reactive: whenever the value changes, the UI changes with it. We can even make complex data types reactive by using the `track` decorator.
+
+What’s missing is the ability to share the same (up-to-date) data between different components.
+
+## Implementing Signals in LWC
+
+Let’s go through what it takes to implement a state management solution in LWC based on Signals.
+
+The first thing is considering whether we want to implement it ourselves or not at all. There are plenty of Signals implementations out there, many open-sourced, that we can bring over as a Static Resource or turn them into an LWC Service that could be imported directly from components.
+
+But LWC has some particularities that make them different from traditional Javascript frameworks. First, the deep and seamless integration with the back-end makes calling into Apex code an integral part of the framework. We want whatever we implement to act and feel like traditional LWC code. Second, as previously mentioned, LWC does have reactive state management, but it is component based and not global. We want to make sure that whatever we use still respects this and expands on that, rather than replace it.
+
+Given these considerations, building something that follows Salesforce software design practices and extends on the framework makes sense, as bringing an outside dependency with a different architectural approach might clash.
+
+There are two main pieces to the Signals technology:
+
+- Storing data and sharing it between elements (usually LWC components, but it could also be any JS code).
+- Ensure the data is current for any element that depends on it.
+
+### Storing Data
+
+First, we want to avoid repeating common application data throughout our components. For example, if several components display data about the same SObject, we want to avoid duplicating the same `wire` or query code in different places.
+
+One option is to create a single “primary” component that holds the data for us. This could be a “wrapper” that contains every other LWC as a child or a component that must be placed on the page for things to work. The “primary” component can hold the logic for fetching the data initially, and then it can pass the data to the other components through events or `@api` calls.
+
+This would be awful. One of the most powerful things about LWCs is that you can compose them in the UI as you wish using the different Salesforce Builders or through Flows. Removing this flexibility by having a parent wrapper component that must be on the page goes against the platform's configurable philosophy.
+
+Another tool we have is LWC Services. LWC can take many shapes; they can have UI, but they can also contain code. In an LWC service, we can have any JS code we want, so this sounds like the perfect place to hold the source of truth for our data, allowing other components to use it by importing the service. This also keeps all components that use the data independent, as the data will come with them when the component is on the page by the way of the import.
+
+So let’s create a new LWC Service, which we’ll call `sharedData`, and set the basis for our data storage.
+
+```javascript
+let _internalSharedData = {};
+
+const SharedData = {
+  getData: () => _internalSharedData,
+  setData: (data) => (_internalSharedData = data)
+};
+
+Object.freeze(SharedData);
+
+export default SharedData;
+```
+
+This is pretty much it when it comes to storing data. We just need an object that can hold whatever we need. In this case we keeping an internal object that is mutable, but we are exporting an immutable object so that it can act as our API, and thus ensure that others are not going to be messing with its properties and values and possibly breaking other dependencies.
+
+To use it, we can import it from any other LWC code, as use it as many times as we want.
+
+```javascript
+import { LightningElement } from "lwc";
+import SharedData from "c/sharedData";
+
+export default class Cmp1 extends LightningElement {
+  sharedData = SharedData.getData();
+}
+```
+
+Let’s modify the sharedData code to simulate that we already have some data to share:
+
+```javascript
+let _internalSharedData = {
+  account: {
+    name: 'Acme Corporation',
+  }
+};
+...
+```
+
+And place some independent components that use the same data on the UI
+
+<Image src={img1} alt="Components sharing the same data" />
+
+We can immediately see the benefits of this approach. We have 2 different components using the same data, but the source of truth of the data lives in a single place, we need to update a single place to enact change in all components that depend on the same piece of information.
+
+### Keeping the Data in Sync
+
+Let’s modify one of our components to allow for the data to change.
+
+<Image src={img2} alt="Form to change the data" />
+
+```javascript
+import { LightningElement } from "lwc";
+import SharedData from "c/sharedData";
+
+export default class Cmp1 extends LightningElement {
+  sharedData = SharedData.getData();
+
+  get accountName() {
+    return this.sharedData.account.name;
+  }
+
+  handleAccountNameChange(event) {
+    SharedData.setData({
+      account: {
+        name: event.target.value,
+      }
+    });
+  }
+}
+```
+
+Whenever the input changes, `handleAccountNameChange` will be triggered and pass the new state to our `SharedData` object. But, there’s a problem, our other component that is supposed to be sharing the same data, does not update.
+
+<Image src={img3} alt="Components not updating" />
+
+Here’s where we need to bridge the gap between how LWC handles reactivity and what we are trying to build. Our Component 2 still has an internal reference to the original value it got when the code loaded. Nothing is “telling” it that the value changed, so LWC does not feel the need to update its UI.
+
+To make it work, we need to implement our own reactivity system within our `SharedData` object, making sure it notifies all of its dependencies that there’s a change so that they can react appropriately. This sounds exactly like the pub/sub pattern:
+
+```javascript
+...
+let _listeners = [];
+
+const SharedData = {
+  registerListener: (listener) => {
+    _listeners.push(listener);
+  },
+  getData: () => _internalSharedData,
+  setData: (data) => {
+    _internalSharedData = data;
+    _listeners.forEach((listener) => {
+      listener(_internalSharedData);
+    });
+  }
+};
+...
+```
+
+And we need to modify all of the components that have the `SharedData` dependency to ensure they register themselves and update their own internal copy of the data, which will in turn notify the LWC framework that it needs to update the UI.
+
+```javascript
+ connectedCallback() {
+    SharedData.registerListener(() => this.sharedData = SharedData.getData());
+  }
+```
+
+With this, everything is now wired up correctly.
+
+<Image src={img4} alt="Components updating" />
+
+### The Next Level
+
+This is a good start, but there are still a lot of issues with this implementation:
+
+- We need to remember to subscribe to changes in all of our components (we should also make sure to unsubscribe when the component gets disconnected, but we’ll keep that out of scope of this article).
+- Our `SharedData` only represents one type of data (right now we are keeping account information). We would want to create “stores” for as many types of information as we want, and be able to share it with any other component.
+
+Let’s tackle the second issue first. Instead of having a single `SharedData` object, we would like to be able to create as many of them as we’d like.
+
+We’ll update the entire service code to be generic and now look like this:
+
+```javascript
+class _Signal {
+  internalData;
+  _listeners = [];
+
+  constructor(data) {
+    this.internalData = data;
+  }
+
+  getData() {
+    return this.internalData;
+  }
+
+  setData(data) {
+    this.internalData = data;
+    this._listeners.forEach((listener) => {
+      listener(this.internalData);
+    });
+  }
+
+  registerListener(listener) {
+    this._listeners.push(listener);
+  }
+}
+
+function createSignal(data) {
+  return new _Signal(data);
+}
+
+export default createSignal;
+```
+
+We introduce a new class, _Signal, which will be the one storing our data and a new exported function that will serve as the entry-point to creating new signals. Now, whenever we want to hold any new type of data, we can call into the createSignal function and pass an initial value:
+
+```javascript
+import createSignal from "c/sharedData";
+
+export const accountSignal = createSignal({
+  account: {
+    name: "Acme Corporation"
+  }
+});
+```
+
+To keep things simple and isolated, we can create a new LWC service per signal, so that the dependencies can decide which one of them to import. This could result in a large number of service components, but that’s not necessarily an issue. Having the code isolated helps with keeping the Single Responsibility Principle, and makes the code easier to find and debug when time comes.
+
+Finally, we update our form component to depend specifically on the accountSignal:
+
+```javascript
+import { LightningElement } from "lwc";
+import {accountSignal} from "c/accountSignal";
+
+export default class Cmp1 extends LightningElement {
+  sharedData = accountSignal.getData();
+
+  connectedCallback() {
+    accountSignal.registerListener(() => this.sharedData = accountSignal.data);
+  }
+
+  get accountName() {
+    return this.sharedData.account.name;
+  }
+
+  handleAccountNameChange(event) {
+    accountSignal.setData({
+      account: {
+        name: event.target.value
+      }
+    });
+  }
+}
+```
+
+Now, we need to solve the first part, how do we avoid having to remember to call `registerListener` for every property we want to make reactive?
+
+We can massage our API a little bit to tell our signal to automatically register listening for changes and update the property. Let’s modify our signal’s code to add a new `bind` method to do just this:
+
+```javascript
+// sharedData.js
+
+...
+bind(cmp, prop) {
+  const getter = () => this.getData();
+  this.registerListener(() => {
+    cmp[prop] = getter();
+  });
+
+  return getter();
+}
+...
+```
+
+Our new method receives two arguments: an instance of the LWC component, and the name of the property we are binding to the signal.
+
+The trick is that we are registering a new function that will update the component’s property with the latest value, since in Javascript we can treat a class as a regular object, and update it’s properties through the `object[key] = updated_value` syntax.
+
+Now, whenever we want to tell a property in an LWC component to update alongside a signal value we can do this:
+
+```javascript
+// any component that depends on a signal
+
+import { LightningElement } from "lwc";
+import {accountSignal} from "c/accountSignal";
+
+export default class Cmp2 extends LightningElement {
+  sharedData = accountSignal.bind(this, "sharedData");
+}
+```
+
+We pass this as the first parameter, since we want to send an instance of the component itself to bind, and the name of the property as the second. Our bind method will take care of piping everything up so that anytime the signal value changes, it will update the component property through the anonymous function it created itself for us.
+
+<Note>
+  Now, there’s a big downside to this bind syntax. Needing to pass the name of the property as a string is not ideal since things will break if we ever refactor the name of the property. Unfortunately there’s not a ton we can do here. A significant improved syntax would be to use decorators to achieve something like this:
+
+  ```javascript
+  @bind(accountSignal)
+  prop;
+  ```
+
+  Unfortunately, the LWC framework disallows the creation of custom decorators at the moment (as of this writing, decorators are still in the proposal stage for Javascript, so hopefully this restriction will be lifted once that feature goes GA)
+
+  As a workaround, if you are using the [LWC Signals library](https://github.com/cesarParra/lwc-signals), I created an `sf` CLI plugin that bypasses Salesforce restrictions and let’s you do this: https://github.com/cesarParra/lwc-signals-plugin
+</Note>
+
+And with that, everything still works!
+
+<Image src={img5} alt="Components updating" />
+
+There’s a lot less duplication, and there’s no need to populate our `connectedCallback` in each component. But, most important of all, this pattern allows us to structure our code in a way that makes the most sense. It lets us have LWC components that focus solely on the UI logic and providing the best user experience, while guiding us to move our business logic and data retrieval logic to separate components.
+
+## Even More!
+
+Keep in mind that the sample implementation is very simple and naive. It doesn’t do any kind of caching to make sure it is not over notifying listeners and it doesn’t do anything special to handle async data coming from the server.
+
+Signals have way more functionality than what was shown here, like creating effects that execute whenever the data changes, or computing values that mix different signals together and are always up to date.
+
+The [LWC Signals](https://github.com/cesarParra/lwc-signals) library does all of that and more, so check it out if this was interesting to you!
