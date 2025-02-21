@@ -1,0 +1,167 @@
+---
+author: 'Cesar Parra'
+title: 'Code Review Checklists'
+description: "These are three code-review template checklists that should be used by code authors, peer reviewers, and subject-matter experts (SMEs) during the code review process."
+pubDate: 'Feb 21 2025'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+These are three code-review template checklists that should be used by code authors, peer reviewers, and subject-matter experts (SMEs) during the code review process.
+The checklists are divided into sections that apply depending on the pull request being reviewed. You can skip any section that does not apply during your review.
+
+## Code Author Template
+
+This checklist should be used by the code author before submitting a pull request.
+
+- [ ] The code compiles and passes static analysis without warnings
+- [ ] The code passes all unit tests
+- [ ] You have tested the code in a sandbox environment
+- [ ] You have annotated the PR with context that will help the reviewer understand the changes and how to best perform the review
+
+## Peer Review Template
+
+This checklist should be used by the peer reviewer during the code review process.
+
+### When the PR Contains Apex code
+
+- [ ] Ensure the solution could not be achieved declaratively
+- [ ] [Order of execution](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm) was reviewed based on the contents of the PR
+- [ ] New code is on the latest API version
+- [ ] Text that ends up in the UI is not hardcoded, instead custom labels are used.
+- [ ] Design makes use of custom metadata instead of custom settings when appropriate
+- [ ] Settings are not hardcoded, instead Custom Metadata Types and Custom Settings are used.
+- [ ] Code complies with security and checks permissions before executing DML
+- [ ] With Sharing [is preferred to enforce security](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm) as needed.
+- [ ] [Security Best Practices](https://security.salesforce.com/security-best-practices) are followed in setup
+- [ ] Static Code Analysis via a third-party tool ([PMD](https://pmd.github.io/latest/pmd_rules_apex.html) or [Salesforce Code Analyzer](https://forcedotcom.github.io/sfdx-scanner/en/v3.x/scanner-commands/run/)) was run against the branch.
+
+### When the PR Contains Trigger Code
+
+- [ ] Only one unmanaged trigger per object
+- [ ] No logic is in the trigger. An Apex trigger handler is used.
+- [ ] The trigger/trigger handler prevents [recursion](https://help.salesforce.com/articleView?id=000332407&type=1&mode=1)
+- [ ] Updates/changes to the current record in context should be done before insert/update context
+
+### All PRs Containing Code
+
+- [ ] There are no SOQL queries in loops
+- [ ] Queries only contain columns in SELECT that are used/needed
+- [ ] Code includes null checks
+- [ ] There are no DML statements in loops
+- [ ] Helper methods are bulkified
+- [ ] Collections and queries are streamlined. Strive for only one SOQL query instead of multiple queries by using [relationships to query related objects/data](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships.htm)
+- [ ] Avoid unnecessary use of acronyms and abbreviations. Only use this when referring to something globally understood when abbreviated or its acronym is used.
+
+### When the PR Contains Async Code
+
+- [ ] Future/Queueable/Batch/Scheduled Apex are used **appropriately** and **sparingly**
+- [ ] [Future follows guidelines](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm#!)
+- [ ] [Queueable follows guidelines](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm)
+- [ ] [Scheduled Apex follows guidelines](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm)
+- [ ] [Batch Apex follows guidelines](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm)
+- [ ] [Platform events considerations](https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_considerations.htm) are taken into account
+
+### When the PR Contains Metadata
+
+- [ ] [Best practice naming conventions are used](https://nimbleuser.github.io/apex-style-guide/)
+- [ ] Contains help text and description (when applicable)
+
+### When the PR Contains Lightning Web Components
+
+- [ ] Calls to server are limited (pass info between components when possible)
+- [ ] Text that ends up in the UI is not hardcoded, instead custom labels are used.
+- [ ] Queries have LIMIT set and use pagination when necessary
+- [ ] Data is lazy loaded when possible and does not preload
+- [ ] Data caching is used when possible, and the following is evaluated:
+  *   [Lightning Data Service](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/data_service.htm) was evaluated over using Apex to create, delete, and update records
+  *   [Storable Actions](https://developer.salesforce.com/blogs/developer-relations/2017/03/lightning-components-best-practices-caching-data-storable-actions.html) were evaluated
+  *   [Caching/LDS](https://developer.salesforce.com/blogs/2019/09/caching-and-synchronizing-component-data-with-lightning-data-service.html) was evaluated
+- [ ] DTOs are used for communication between frontend and backend unless there is a good reason not to
+- [ ] Code DOES NOT use pub/sub for parent-child or child-parent communication
+- [ ] A parent component communicates with a child component by either:
+  *   Setting the `@api` properties of the child ([apiProperty](https://github.com/trailheadapps/lwc-recipes/tree/master/force-app/main/default/lwc/apiProperty) recipe)
+  *   Calling an [@api](https://developer.salesforce.com/docs/component-library/documentation/en/lwc/create_javascript_methods) method defined in the child component
+  *   A child component communicates with its parent component by dispatching a DOM event with or without a data payload ([eventWithData](https://github.com/trailheadapps/lwc-recipes/tree/master/force-app/main/default/lwc/eventWithData) recipe and [eventSimple](https://github.com/trailheadapps/lwc-recipes/tree/master/force-app/main/default/lwc/eventSimple) recipe respectively).
+  *   Always use [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) (not [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)), even when the event doesn’t have a data payload
+  *   Prefer passing data using primitive data types in the event payload
+  *   If you must pass data using a non-primitive data type in the event payload, pass a copy of the object or array to avoid leaking private objects and unpredictable mutations by the event listener
+  *   If you need to pass a record, pass the record ID
+  *   Use the Lightning Messaging Service to communicate across the DOM in the Lightning page; `c/pubsub` should only be used if there are limitations to LMS
+- [ ] Use custom [CSS customizer](https://www.lightningdesignsystem.com/tools/scope-customizer/) if unique look/feel is needed
+- [ ] Code is [inclusive](https://opensource.com/article/19/11/inclusive-design-code) and makes use of [Accessibility Attributes](https://developer.salesforce.com/docs/component-library/documentation/en/lwc/create_components_accessibility_attributes)
+- [ ] Minimize number of times component is being [rendered](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/components_lifecycle.htm)
+- [ ] Code makes use of [Canvas](https://developer.salesforce.com/docs/atlas.en-us.platform_connect.meta/platform_connect/canvas_framework_intro.htm) where applicable instead of iFrame; iFrames are sometimes easier but provide less functionality
+- [ ] Code does not make use of `window.location` ([see docs](https://help.salesforce.com/s/articleView?id=sf.lex_prepare_vf_window.htm&type=5))
+- [ ] Aura components are [migrated to LWC](https://developer.salesforce.com/docs/component-library/documentation/lwc/migrate_introduction) when possible
+- [ ] [Lightning Component Inspector](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/inspector_perf.htm) is used to monitor the performance impact of new components
+- [ ] The component follows LWC [best practices](https://developer.salesforce.com/blogs/2020/06/lightning-web-components-performance-best-practices.html)
+- [ ] Each LWC has a [Jest test](https://trailhead.salesforce.com/content/learn/modules/test-lightning-web-components/set-up-jest-testing-framework) that tests the component’s behavior in isolation
+
+### Apex Test Classes
+
+- [ ] Tests are **meaningful**
+  *   Tests cover positive scenario
+  *   Tests cover negative scenario
+  *   Test cover null scenario
+- [ ] Tests provide 90%+ code coverage
+- [ ] If not able to achieve 90%, explanation is in comment block at top of class and additional sign off required
+- [ ] Tests make use of test [factories/utils class](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_utility_classes.htm) instead of creating their own data
+- [ ] Test data includes scenarios with both invalid and valid inputs, e.g. different data types or values
+- [ ] Tests include `System.Assert` to validate expected outcomes
+- [ ] Tests use [runAs](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_tools_runas.htm) method to test in different user contexts and sharing
+- [ ] Tests do not use SeeAllData
+- [ ] Tests check bulk scenarios
+- [ ] Tests use startTest() and stopTest() properly (e.g. to make asynchronous code run, or to create a container for the limits). Not necessary when the test is not asserting against limits as long as the test method correctly distinguishes between Arrange, Act, and Assert by using proper spacing
+- [ ] Tests enforce [Sharing](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_security_sharing_rules.htm)
+- [ ] Tests leverage [mock testing framework](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing_httpcalloutmock.htm) to test web services
+
+## SME Review Template
+
+This checklist should be used by the subject-matter expert (SME) during the code review process.
+
+### Implementation
+
+- [ ] The code change does what it is supposed to do
+- [ ] The solution is as simple as possible
+- [ ] The solution does not introduce regressions to other parts of the system
+- [ ] A similar functionality does not already exist in the system, and if it does, there is a good reason for the new implementation
+- [ ] The code is located at the right abstraction level
+- [ ] Feature flags are used when necessary
+
+### Error Handling and Logging
+
+- [ ] There is enough logging or debugging information to troubleshoot issues in production
+
+### Configuration
+
+- [ ] Automatic build steps were created/updated to allow for development environments to be set up quickly with this solution
+- [ ] Documentation or README files were updated to account for any changes in configuration.
+
+### Usability
+
+- [ ] The solution is user-friendly from the perspective of the end-user
+- [ ] The API is well documented
+- [ ] The API is intuitive and easy to use
+
+### Ethics
+
+- [ ] The solution complies with privacy laws and regulations
+- [ ] The solution does not exploit human biases and behavioral patterns
+- [ ] If the solution allows for users to interact with each other, it does not enable harassment or abuse
+- [ ] Algorithms and AI models are fair and unbiased
+
+### Performance
+
+- [ ] Integrations are asynchronous if there is not a real time requirement
+- [ ] Integrations follow [integration best practice](https://resources.docs.salesforce.com/sfdc/pdf/integration_patterns_and_practices.pdf)
+- [ ] Multiple requests are combined into [single composite request](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_composite.htm) when possible
+- [ ] Caching was evaluated
+- [ ] The organization meets the [Lightning Performance Technical Requirements](https://help.salesforce.com/articleView?id=technical_requirements.htm&type=5)
+  * All new custom components and changes have been monitored and [there is not an uptick in EPT as result of change](https://trailhead.salesforce.com/en/content/learn/modules/lightning-experience-performance-optimization/measure-lightning-experience-performance-and-experience-page-time-ept)
+  * Performance limits are not reached
+  * [OData Limits and Considerations](https://help.salesforce.com/articleView?id=platform_connect_considerations_query_rate_limits.htm&type=5) have been reviewed by architect
+  * [API Limits and Considerations](https://developer.salesforce.com/docs/atlas.en-us.224.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm) have been reviewed by architect
+  * [Process Limits and Considerations](https://help.salesforce.com/articleView?id=process_considerations.htm&type=5) have been reviewed by architect
+  * Scheduled flows have been discussed with architect
+  * Invocable/scheduled/future/batch/queued Apex has been discussed with architect
+  * Email actions have been discussed with architect
