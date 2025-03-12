@@ -1,0 +1,32 @@
+---
+author: 'Cesar Parra'
+title: 'Freaky Apex Quirks Part Deux: The Quantum Map Key'
+description: "The frustrating journey of code that changes behavior when observed."
+pubDate: 'Mar 12 2025'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+import { Image } from 'astro:assets';
+import freaky from './images/freaky-apex-2/freaky.gif';
+
+In quantum mechanics there is this concept where things exist in several different states at the same time, and the state is only determined once the thing is observed.
+
+Well, we as programmers don’t particularly enjoy when things exist in a non-deterministic state. We want to understand the behavior of the system, and to be able to predict what the system is going given a particular set of inputs.
+
+Imagine if you were debugging some code, but the code starts working when you add debug statements, and then failed again when the debug statements are removed. That’d be a nightmare.
+
+Well, that’s what I experienced when trying to create a custom map key, kinda…
+
+## The Quantum Map Key
+
+Apex allows us to create [custom types that can act as map keys or set values](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_maps_keys_userdefined.htm), where all you have to do is implement the `equals` method and the `hashCode` method, so that the object uniqueness can be determined in a consistent way.
+
+But I found that this wasn’t working quite right for me. I created a class with the intention to use it as a Map key, which I knew had the correct implementation, including writing unit tests to ensure different object instances where correctly compared as equal. After a lot of frustration I started digging and found myself faced with this…let’s call it quirkyness to avoid using expletives.
+
+<Image src={freaky} alt="Chaging debug level changes behavior" />
+
+It turns out that changing the debug level changes the behavior of the code!
+
+I found a few posts in StackExchange [discussing](https://salesforce.stackexchange.com/questions/203542/unexpected-results-when-using-a-custom-class-as-key-in-map) and [explaining](https://salesforce.stackexchange.com/questions/46525/hashcode-is-never-called-when-adding-to-maps-and-sets) why this happens, and it turns out that Salesforce has 2 different representations of the Map class, and the Apex interpreter uses one or the other depending on the scenario, one scenario apparently being the debug level the code is being run with.
+
+Luckily (for me), I ended up not needing to implement the feature with that approach, because I don’t know if I would have trusted having this behavior in production.
