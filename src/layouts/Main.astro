@@ -73,9 +73,9 @@ const { title, description, isHomePage = false } = Astro.props;
 
       // Check if script is already loaded to avoid duplicates
       if (window.embeddedservice_bootstrap) {
-        console.log("Embedded messaging script already loaded.", window.embeddedservice_bootstrap);
-        initEmbeddedMessaging();
-        return;
+        // console.log("Embedded messaging script already loaded.", window.embeddedservice_bootstrap);
+        // initEmbeddedMessaging();
+        // return;
       }
 
       // Dynamically load the bootstrap script
