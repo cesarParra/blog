@@ -30,10 +30,45 @@ const {title, description, isHomePage = false} = Astro.props;
     </div>
 </main>
 </body>
-<script type='text/javascript'>
+<!--<script type='text/javascript'>-->
+<!--  function initEmbeddedMessaging() {-->
+<!--    try {-->
+<!--      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'-->
+
+<!--      embeddedservice_bootstrap.init(-->
+<!--        '00DWC000002CRRV',-->
+<!--        'Messaging_For_In_App_Rad_1',-->
+<!--        'https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',-->
+<!--        {-->
+<!--          scrt2URL: 'https://wheretherebedragons&#45;&#45;testville.sandbox.my.salesforce-scrt.com'-->
+<!--        }-->
+<!--      );-->
+<!--    } catch (err) {-->
+<!--      console.error('Error loading Embedded Messaging: ', err);-->
+<!--    }-->
+<!--  };-->
+<!--</script>-->
+<!--<script type='text/javascript' src='https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>-->
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    // Check if script is already loaded to avoid duplicates
+    if (window.embeddedservice_bootstrap) {
+      initEmbeddedMessaging();
+      return;
+    }
+
+    // Dynamically load the bootstrap script
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js';
+    script.onload = initEmbeddedMessaging;
+    document.head.appendChild(script);
+  });
+
   function initEmbeddedMessaging() {
     try {
-      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+      embeddedservice_bootstrap.settings.language = 'en_US';
 
       embeddedservice_bootstrap.init(
         '00DWC000002CRRV',
@@ -46,7 +81,7 @@ const {title, description, isHomePage = false} = Astro.props;
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
     }
-  };
+  }
 </script>
-<script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
 </html>
