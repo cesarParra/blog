@@ -10,9 +10,13 @@ import partytown from '@astrojs/partytown';
 export default defineConfig({
   site: 'https://cesarparra.github.io',
   base: 'blog',
-  server: {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
+  vite: {
+    server: {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
     }
   },
   integrations: [mdx(), sitemap(), react(), tailwind({
