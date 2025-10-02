@@ -1,33 +1,33 @@
 ---
 import Header from "../components/Header.astro";
 import BaseHead from "../components/BaseHead.astro";
-import {Footer} from "../components/Footer.tsx";
-import {Container} from "../components/Container.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { Container } from "../components/Container.tsx";
 
-const {title, description, isHomePage = false} = Astro.props;
+const { title, description, isHomePage = false } = Astro.props;
 ---
 <!doctype html>
 <html class="h-full antialiased" lang="en">
 <head>
-    <BaseHead title={title} description={description}/>
+  <BaseHead title={ title } description={ description }/>
 </head>
 
 <body class="flex min-h-full bg-slate-50 dark:bg-black">
 <main class="flex w-full">
-    <div class="fixed inset-0 flex justify-center sm:px-8">
-        <div class="flex w-full max-w-7xl lg:px-8">
-            <div class="w-full bg-white ring-1 ring-slate-100 dark:bg-slate-900 dark:ring-slate-300/20"/>
-        </div>
+  <div class="fixed inset-0 flex justify-center sm:px-8">
+    <div class="flex w-full max-w-7xl lg:px-8">
+      <div class="w-full bg-white ring-1 ring-slate-100 dark:bg-slate-900 dark:ring-slate-300/20"/>
     </div>
-    <div class="relative flex w-full flex-col">
-        <Header isHomePage={isHomePage} />
-        <main class="flex-auto">
-            <slot/>
-        </main>
-        <Container>
-            <Footer/>
-        </Container>
-    </div>
+  </div>
+  <div class="relative flex w-full flex-col">
+    <Header isHomePage={ isHomePage }/>
+    <main class="flex-auto">
+      <slot/>
+    </main>
+    <Container>
+      <Footer/>
+    </Container>
+  </div>
 </main>
 </body>
 <!--<script type='text/javascript'>-->
@@ -52,36 +52,39 @@ const {title, description, isHomePage = false} = Astro.props;
 
 <script type="text/javascript">
   document.addEventListener("astro:page-load", () => {
-    // Check if script is already loaded to avoid duplicates
-    if (window.embeddedservice_bootstrap) {
-      initEmbeddedMessaging();
-      return;
+    console.log("Page loaded, initializing embedded messaging...");
+
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = "en_US";
+
+        embeddedservice_bootstrap.init(
+          "00DWC000002CRRV",
+          "Messaging_For_In_App_Rad_1",
+          "https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368",
+          {
+            scrt2URL: "https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com"
+          }
+        );
+      } catch (err) {
+        console.error("Error loading Embedded Messaging: ", err);
+      }
     }
 
-    // Dynamically load the bootstrap script
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js';
-    script.onload = initEmbeddedMessaging;
-    document.head.appendChild(script);
+      // Check if script is already loaded to avoid duplicates
+      if (window.embeddedservice_bootstrap) {
+        console.log("Embedded messaging script already loaded.", window.embeddedservice_bootstrap);
+        initEmbeddedMessaging();
+        return;
+      }
+
+      // Dynamically load the bootstrap script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js';
+      script.onload = initEmbeddedMessaging;
+      document.head.appendChild(script);
   });
-
-  function initEmbeddedMessaging() {
-    try {
-      embeddedservice_bootstrap.settings.language = 'en_US';
-
-      embeddedservice_bootstrap.init(
-        '00DWC000002CRRV',
-        'Messaging_For_In_App_Rad_1',
-        'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
-        {
-          scrt2URL: 'https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com'
-        }
-      );
-    } catch (err) {
-      console.error('Error loading Embedded Messaging: ', err);
-    }
-  }
 </script>
 
 </html>
