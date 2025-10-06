@@ -59,9 +59,9 @@ const { title, description, isHomePage = false } = Astro.props;
     existingScripts.forEach(script => script.remove());
 
     // Also remove any existing embeddedservice_bootstrap object to reset state
-    // if (window.embeddedservice_bootstrap) {
-    //   delete window.embeddedservice_bootstrap;
-    // }
+    if (window.embeddedservice_bootstrap) {
+      delete window.embeddedservice_bootstrap;
+    }
   });
 
   document.addEventListener("astro:page-load", () => {
