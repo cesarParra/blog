@@ -50,52 +50,52 @@ const { title, description, isHomePage = false } = Astro.props;
 <!--</script>-->
 <!--<script type='text/javascript' src='https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>-->
 
-<!--<script type="text/javascript">-->
-<!--  document.addEventListener("astro:before-preparation", () => {-->
-<!--    console.log("Cleaning up before page load...");-->
-<!--    // This gets called before the page loads or navigates-->
-<!--    // Remove any existing embedded messaging scripts to avoid duplicates-->
-<!--    const existingScripts = document.querySelectorAll('script[src*="bootstrap.min.js"]');-->
-<!--    existingScripts.forEach(script => script.remove());-->
+<script type="text/javascript">
+  document.addEventListener("astro:before-preparation", () => {
+    console.log("Cleaning up before page load...");
+    // This gets called before the page loads or navigates
+    // Remove any existing embedded messaging scripts to avoid duplicates
+    const existingScripts = document.querySelectorAll('script[src*="bootstrap.min.js"]');
+    existingScripts.forEach(script => script.remove());
 
-<!--    // Also remove any existing embeddedservice_bootstrap object to reset state-->
-<!--    if (window.embeddedservice_bootstrap) {-->
-<!--      delete window.embeddedservice_bootstrap;-->
-<!--    }-->
-<!--  });-->
+    // Also remove any existing embeddedservice_bootstrap object to reset state
+    if (window.embeddedservice_bootstrap) {
+      delete window.embeddedservice_bootstrap;
+    }
+  });
 
-<!--  document.addEventListener("astro:page-load", () => {-->
-<!--    // This gets called whenever the page loads or navigates-->
-<!--    function initEmbeddedMessaging() {-->
-<!--      try {-->
-<!--        embeddedservice_bootstrap.settings.language = "en_US";-->
+  document.addEventListener("astro:page-load", () => {
+    // This gets called whenever the page loads or navigates
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = "en_US";
 
-<!--        embeddedservice_bootstrap.init(-->
-<!--          '00D3t000001z5XN',-->
-<!--          'In_App_Messaging_New_Chat',-->
-<!--          'https://wheretherebedragons.my.site.com/ESWInAppMessagingNewC1719340203248',-->
-<!--          {-->
-<!--            scrt2URL: "https://wheretherebedragons&#45;&#45;testville.sandbox.my.salesforce-scrt.com"-->
-<!--          }-->
-<!--        );-->
-<!--      } catch (err) {-->
-<!--        console.error("Error loading Embedded Messaging: ", err);-->
-<!--      }-->
-<!--    }-->
+        embeddedservice_bootstrap.init(
+          '00D3t000001z5XN',
+          'In_App_Messaging_New_Chat',
+          'https://wheretherebedragons.my.site.com/ESWInAppMessagingNewC1719340203248',
+          {
+            scrt2URL: "https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com"
+          }
+        );
+      } catch (err) {
+        console.error("Error loading Embedded Messaging: ", err);
+      }
+    }
 
-<!--      // Check if script is already loaded to avoid duplicates-->
-<!--      if (window.embeddedservice_bootstrap) {-->
-<!--        initEmbeddedMessaging();-->
-<!--        return;-->
-<!--      }-->
+      // Check if script is already loaded to avoid duplicates
+      if (window.embeddedservice_bootstrap) {
+        initEmbeddedMessaging();
+        return;
+      }
 
-<!--      // Dynamically load the bootstrap script-->
-<!--      const script = document.createElement('script');-->
-<!--      script.type = 'text/javascript';-->
-<!--      script.src = 'https://wheretherebedragons.my.site.com/ESWInAppMessagingNewC1719340203248/assets/js/bootstrap.min.js';-->
-<!--      script.onload = initEmbeddedMessaging;-->
-<!--      document.head.appendChild(script);-->
-<!--  });-->
-<!--</script>-->
+      // Dynamically load the bootstrap script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://wheretherebedragons.my.site.com/ESWInAppMessagingNewC1719340203248/assets/js/bootstrap.min.js';
+      script.onload = initEmbeddedMessaging;
+      document.head.appendChild(script);
+  });
+</script>
 
 </html>
