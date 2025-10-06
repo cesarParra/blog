@@ -71,9 +71,9 @@ const { title, description, isHomePage = false } = Astro.props;
         embeddedservice_bootstrap.settings.language = "en_US";
 
         embeddedservice_bootstrap.init(
-          '00D3t000001z5XN',
-          'In_App_Messaging_New_Chat',
-          'https://wheretherebedragons.my.site.com/ESWInAppMessagingNewC1719340203248',
+          '00DWC000002CRRV',
+          'Messaging_For_In_App_Rad_1',
+          'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
           {
             scrt2URL: "https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com"
           }
@@ -92,7 +92,7 @@ const { title, description, isHomePage = false } = Astro.props;
       // Dynamically load the bootstrap script
       const script = document.createElement('script');
       script.type = 'text/javascript';
-      script.src = 'https://wheretherebedragons.my.site.com/ESWInAppMessagingNewC1719340203248/assets/js/bootstrap.min.js';
+      script.src = 'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js';
       script.onload = initEmbeddedMessaging;
       document.head.appendChild(script);
   });
