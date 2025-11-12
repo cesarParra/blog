@@ -65,50 +65,83 @@ const { title, description, isHomePage = false } = Astro.props;
 <!--<script type='text/javascript' src='https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>-->
 
 <script type="text/javascript">
+  let chatWidgetInitialized = false;
+
   document.addEventListener("astro:before-preparation", () => {
     console.log("Cleaning up before page load...");
     // This gets called before the page loads or navigates
     // Remove any existing embedded messaging scripts to avoid duplicates
-    const existingScripts = document.querySelectorAll('script[src*="bootstrap.min.js"]');
+    const existingScripts = document.querySelectorAll("script[src*=\"bootstrap.min.js\"]");
     existingScripts.forEach(script => script.remove());
 
-    // Also remove any existing embeddedservice_bootstrap object to reset state
+    // Look for and remove any iframes or containers the widget might have created
+    const widgetContainers = document.querySelectorAll("[class*=\"embeddedMessagingFrame\"]");
+    widgetContainers.forEach(container => {
+      console.log("removing container", container);
+      container.remove();
+    });
+
+    // Clean up global objects
     if (window.embeddedservice_bootstrap) {
+      // // Try to call any cleanup/destroy methods if they exist
+      // if (typeof window.embeddedservice_bootstrap.destroy === 'function') {
+      //   window.embeddedservice_bootstrap.destroy();
+      // } else if (typeof window.embeddedservice_bootstrap.close === 'function') {
+      //   window.embeddedservice_bootstrap.close();
+      // }
       delete window.embeddedservice_bootstrap;
     }
+
+    chatWidgetInitialized = false;
   });
 
   document.addEventListener("astro:page-load", () => {
+    if (chatWidgetInitialized) {
+      return;
+    }
+
     // This gets called whenever the page loads or navigates
     function initEmbeddedMessaging() {
       try {
+        if (!window.embeddedservice_bootstrap) {
+          console.warn('embeddedservice_bootstrap not available');
+          return;
+        }
+
         embeddedservice_bootstrap.settings.language = "en_US";
 
         embeddedservice_bootstrap.init(
-          '00DWC000002CRRV',
-          'Messaging_For_In_App_Rad_1',
-          'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
+          "00DWC000002CRRV",
+          "Messaging_For_In_App_Rad_1",
+          "https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368",
           {
             scrt2URL: "https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com"
           }
         );
+        chatWidgetInitialized = true;
+        console.log('Chat widget initialized successfully');
       } catch (err) {
         console.error("Error loading Embedded Messaging: ", err);
+        chatWidgetInitialized = false;
       }
     }
 
-      // Check if script is already loaded to avoid duplicates
-      if (window.embeddedservice_bootstrap) {
-        initEmbeddedMessaging();
-        return;
-      }
+    // Check if script is already loaded to avoid duplicates
+    if (window.embeddedservice_bootstrap) {
+      initEmbeddedMessaging();
+      return;
+    }
 
-      // Dynamically load the bootstrap script
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = 'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js';
-      script.onload = initEmbeddedMessaging;
-      document.head.appendChild(script);
+    // Dynamically load the bootstrap script
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js";
+    script.onload = initEmbeddedMessaging;
+    script.onerror = () => {
+      console.error('Failed to load chat widget script');
+      chatWidgetInitialized = false;
+    };
+    document.head.appendChild(script);
   });
 </script>
 
