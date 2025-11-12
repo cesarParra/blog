@@ -165,12 +165,9 @@ const { title, description, isHomePage = false } = Astro.props;
       const isNavigatingToChatPage = chatPaths.some(path =>
         targetUrl.pathname.startsWith(path)
       );
-      const isNavigatingFromChatPage = chatPaths.some(path =>
-        window.location.pathname.startsWith(path)
-      );
 
       // If moving between chat and non-chat pages, do full reload
-      if (isNavigatingToChatPage !== isNavigatingFromChatPage) {
+      if (isNavigatingToChatPage) {
         event.preventDefault();
         window.location.href = event.to.href;
       }
