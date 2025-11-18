@@ -42,70 +42,84 @@ const { title, description, isHomePage = false } = Astro.props;
   </div>
 </main>
 </body>
-<script type='text/javascript'>
-  function initEmbeddedMessaging() {
-    try {
-      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+<!--<script type="text/javascript">-->
+  //   function initEmbeddedMessaging() {
+  //     try {
+  //       embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+  //
+  //       embeddedservice_bootstrap.init(
+  //         '00DWC000002CRRV',
+  //         'Messaging_For_In_App_Rad_1',
+  //         'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
+  //         {
+  //           scrt2URL: 'https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com'
+  //         }
+  //       );
+  //
+  //       window.addEventListener("onEmbeddedMessagingButtonCreated", (event) => console.log("Embedded Messaging Button Created: ", event));
+  //       window.addEventListener("onEmbeddedMessagingButtonCreated", (event) => console.log("Embedded Messaging Button Created: ", event));
+  //       window.addEventListener("onEmbeddedMessagingWindowClosed", (event) => console.log("Embedded Messaging Window Closed: ", event));
+  //       window.addEventListener("onEmbeddedMessagingWindowMinimized", (event) => console.log("Embedded Messaging Window Minimzed: ", event));
+  //       window.addEventListener("onEmbeddedMessagingWindowMaximized", (event) => console.log("Embedded Messaging Window Max: ", event));
+  //     } catch (err) {
+  //       console.error('Error loading Embedded Messaging: ', err);
+  //     }
+  //   }
+  // </script>
+  // <script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
-      embeddedservice_bootstrap.init(
-        '00DWC000002CRRV',
-        'Messaging_For_In_App_Rad_1',
-        'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
-        {
-          scrt2URL: 'https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com'
+  <script type="text/javascript">
+    document.addEventListener("astro:before-preparation", () => {
+      console.log("Cleaning up before page load...");
+      // This gets called before the page loads or navigates
+      // Remove any existing embedded messaging scripts to avoid duplicates
+      const existingScripts = document.querySelectorAll('script[src*="bootstrap.min.js"]');
+      existingScripts.forEach(script => script.remove());
+
+      // Also remove any existing embeddedservice_bootstrap object to reset state
+      if (embeddedservice_bootstrap) {
+        embeddedservice_bootstrap.utilAPI.removeAllComponents().then(() => {
+          console.log("Removed existing embeddedservice_bootstrap components.");
+        }).catch((err) => {
+          console.error("Error removing embeddedservice_bootstrap components: ", err);
+        });
+      } else {
+        console.log("No existing embeddedservice_bootstrap found.");
+      }
+    });
+
+    document.addEventListener("astro:page-load", () => {
+      // This gets called whenever the page loads or navigates
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = "en_US";
+
+          embeddedservice_bootstrap.init(
+            '00DWC000002CRRV',
+            'Messaging_For_In_App_Rad_1',
+            'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
+            {
+              scrt2URL: "https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com"
+            }
+          );
+        } catch (err) {
+          console.error("Error loading Embedded Messaging: ", err);
         }
-      );
+      }
 
-      window.addEventListener("onEmbeddedMessagingButtonCreated", (event) => console.log("Embedded Messaging Button Created: ", event));
-      window.addEventListener("onEmbeddedMessagingButtonCreated", (event) => console.log("Embedded Messaging Button Created: ", event));
-      window.addEventListener("onEmbeddedMessagingWindowClosed", (event) => console.log("Embedded Messaging Window Closed: ", event));
-      window.addEventListener("onEmbeddedMessagingWindowMinimized", (event) => console.log("Embedded Messaging Window Minimzed: ", event));
-      window.addEventListener("onEmbeddedMessagingWindowMaximized", (event) => console.log("Embedded Messaging Window Max: ", event));
-    } catch (err) {
-      console.error('Error loading Embedded Messaging: ', err);
-    }
-  }
-</script>
-<script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+      // Check if script is already loaded to avoid duplicates
+      if (window.embeddedservice_bootstrap) {
+        initEmbeddedMessaging();
+        return;
+      }
 
-<script is:inline>
-  // document.addEventListener("astro:page-load", () => {
-  //   // if (initEmbeddedMessaging) {
-  //   //   console.log('Re-initializing Embedded Messaging on page load');
-  //   //   initEmbeddedMessaging();
-  //   // }
-  //   // if (embeddedservice_bootstrap) {
-  //   //   console.log('Re-initializing Embedded Messaging on page load');
-  //   //   embeddedservice_bootstrap.utilAPI.showChatButton();
-  //   // } else {
-  //   //   console.log('embeddedservice_bootstrap is not defined');
-  //   // }
-  // });
-</script>
+      // Dynamically load the bootstrap script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js';
+      script.onload = initEmbeddedMessaging;
+      document.head.appendChild(script);
+    });
+    </script>
 
-<!--<script>-->
-<!--  // Check if we're on a page that needs the chat widget-->
-<!--  if (typeof window !== 'undefined') {-->
-<!--    // List of paths where chat should work-->
-<!--    const chatPaths = ['/name-of-page', '/another-page', '/yet-another-page'];-->
-<!--    const currentPath = window.location.pathname;-->
-
-<!--    document.addEventListener('astro:before-preparation', (event) => {-->
-<!--      console.log('navigating away from', currentPath);-->
-<!--      console.log('navigating to', event.to.pathname);-->
-
-<!--      const targetUrl = new URL(event.to);-->
-<!--      const isNavigatingToChatPage = chatPaths.some(path =>-->
-<!--        targetUrl.pathname.startsWith(path)-->
-<!--      );-->
-
-<!--      // If moving between chat and non-chat pages, do full reload-->
-<!--      if (isNavigatingToChatPage) {-->
-<!--        event.preventDefault();-->
-<!--        window.location.href = event.to.href;-->
-<!--      }-->
-<!--    });-->
-<!--  }-->
-<!--</script>-->
-
-</html>
+  </html>
