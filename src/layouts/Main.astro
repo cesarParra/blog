@@ -55,6 +55,12 @@ const { title, description, isHomePage = false } = Astro.props;
           scrt2URL: 'https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com'
         }
       );
+
+      window.addEventListener("onEmbeddedMessagingButtonCreated", (event) => console.log("Embedded Messaging Button Created: ", event));
+      window.addEventListener("onEmbeddedMessagingButtonCreated", (event) => console.log("Embedded Messaging Button Created: ", event));
+      window.addEventListener("onEmbeddedMessagingWindowClosed", (event) => console.log("Embedded Messaging Window Closed: ", event));
+      window.addEventListener("onEmbeddedMessagingWindowMinimized", (event) => console.log("Embedded Messaging Window Minimzed: ", event));
+      window.addEventListener("onEmbeddedMessagingWindowMaximized", (event) => console.log("Embedded Messaging Window Max: ", event));
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
     }
@@ -63,18 +69,18 @@ const { title, description, isHomePage = false } = Astro.props;
 <script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
 <script is:inline>
-  document.addEventListener("astro:page-load", () => {
-    if (initEmbeddedMessaging) {
-      console.log('Re-initializing Embedded Messaging on page load');
-      initEmbeddedMessaging();
-    }
-    // if (embeddedservice_bootstrap) {
-    //   console.log('Re-initializing Embedded Messaging on page load');
-    //   embeddedservice_bootstrap.utilAPI.showChatButton();
-    // } else {
-    //   console.log('embeddedservice_bootstrap is not defined');
-    // }
-  });
+  // document.addEventListener("astro:page-load", () => {
+  //   // if (initEmbeddedMessaging) {
+  //   //   console.log('Re-initializing Embedded Messaging on page load');
+  //   //   initEmbeddedMessaging();
+  //   // }
+  //   // if (embeddedservice_bootstrap) {
+  //   //   console.log('Re-initializing Embedded Messaging on page load');
+  //   //   embeddedservice_bootstrap.utilAPI.showChatButton();
+  //   // } else {
+  //   //   console.log('embeddedservice_bootstrap is not defined');
+  //   // }
+  // });
 </script>
 
 <!--<script>-->
