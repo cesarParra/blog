@@ -64,7 +64,7 @@ const { title, description, isHomePage = false } = Astro.props;
 </script>
 <script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
-<script>
+<script is:inline>
   document.addEventListener("astro:page-load", () => {
     if (embeddedservice_bootstrap) {
       console.log('Re-initializing Embedded Messaging on page load');
