@@ -42,28 +42,38 @@ const { title, description, isHomePage = false } = Astro.props;
   </div>
 </main>
 </body>
-<!--<script type='text/javascript'>-->
-<!--  function initEmbeddedMessaging() {-->
-<!--    try {-->
-<!--      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'-->
+<script type='text/javascript'>
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-<!--      embeddedservice_bootstrap.init(-->
-<!--        '00DWC000002CRRV',-->
-<!--        'Messaging_For_In_App_Rad_1',-->
-<!--        'https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',-->
-<!--        {-->
-<!--          scrt2URL: 'https://wheretherebedragons&#45;&#45;testville.sandbox.my.salesforce-scrt.com'-->
-<!--        }-->
-<!--      );-->
-<!--    } catch (err) {-->
-<!--      console.error('Error loading Embedded Messaging: ', err);-->
-<!--    }-->
-<!--  }-->
+      embeddedservice_bootstrap.init(
+        '00DWC000002CRRV',
+        'Messaging_For_In_App_Rad_1',
+        'https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
+        {
+          scrt2URL: 'https://wheretherebedragons--testville.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
 
-<!--  initEmbeddedMessaging();-->
-<!--</script>-->
-<!--<script type='text/javascript' src='https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>-->
+  initEmbeddedMessaging();
+</script>
+<script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
+<script>
+  document.addEventListener("astro:page-load", () => {
+    if (embeddedservice_bootstrap) {
+      console.log('Re-initializing Embedded Messaging on page load');
+      embeddedservice_bootstrap.utilAPI.showChatButton();
+    } else {
+      console.log('embeddedservice_bootstrap is not defined');
+    }
+  });
+</script>
 
 <!--<script>-->
 <!--  // Check if we're on a page that needs the chat widget-->
