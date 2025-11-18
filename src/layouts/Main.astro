@@ -59,19 +59,21 @@ const { title, description, isHomePage = false } = Astro.props;
       console.error('Error loading Embedded Messaging: ', err);
     }
   }
-
-  initEmbeddedMessaging();
 </script>
 <script type='text/javascript' src='https://wheretherebedragons--testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
 <script is:inline>
   document.addEventListener("astro:page-load", () => {
-    if (embeddedservice_bootstrap) {
+    if (initEmbeddedMessaging) {
       console.log('Re-initializing Embedded Messaging on page load');
-      embeddedservice_bootstrap.utilAPI.showChatButton();
-    } else {
-      console.log('embeddedservice_bootstrap is not defined');
+      initEmbeddedMessaging();
     }
+    // if (embeddedservice_bootstrap) {
+    //   console.log('Re-initializing Embedded Messaging on page load');
+    //   embeddedservice_bootstrap.utilAPI.showChatButton();
+    // } else {
+    //   console.log('embeddedservice_bootstrap is not defined');
+    // }
   });
 </script>
 
