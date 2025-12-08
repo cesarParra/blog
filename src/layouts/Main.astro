@@ -43,6 +43,43 @@ const { title, description, isHomePage = false } = Astro.props;
 </main>
 </body>
 
+<script type='text/javascript' is:inline>
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US';
+      embeddedservice_bootstrap.init(
+        '00DWC000002CRRV',
+        'Messaging_For_In_App_Rad_1',
+        'https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368',
+        {
+          scrt2URL: 'https://wheretherebedragons&#45;&#45;testville.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
+</script>
+<script type='text/javascript' src='https://wheretherebedragons&#45;&#45;testville.sandbox.my.site.com/ESWMessagingForInAppR1759343674368/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+<script type="text/javascript" is:inline>
+  // Cleanup before navigation
+  document.addEventListener('astro:before-preparation', () => {
+    if (window.embeddedservice_bootstrap?.userVerificationAPI && window.embeddedservice_bootstrap?.utilAPI) {
+      embeddedservice_bootstrap.userVerificationAPI.clearSession(true).then(() => {
+        embeddedservice_bootstrap.utilAPI.removeAllComponents();
+      }).catch(err => console.error('Cleanup failed:', err));
+    }
+  });
+
+  // Reinitialize after page load
+  document.addEventListener('astro:page-load', () => {
+    if (window.embeddedservice_bootstrap && typeof initEmbeddedMessaging === 'function') {
+      initEmbeddedMessaging();
+    }
+  });
+</script>
+
 <!--<script type="text/javascript" is:inline>-->
 <!--  document.addEventListener("astro:before-preparation", () => {-->
 <!--    console.log("Cleaning up before page load...");-->
