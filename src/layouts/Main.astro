@@ -45,12 +45,18 @@ const { title, description, isHomePage = false } = Astro.props;
 
 <script type="text/javascript" is:inline>
   document.addEventListener("astro:before-preparation", (event) => {
-    //event.preventDefault();
-    console.log(event);
+    import { navigate } from "astro:transitions/client";
+
+    event.preventDefault();
+    console.log('event', event);
+    console.log('detail:', event.detail);
     console.log("Cleaning up before page load...");
     if (window.embeddedservice_bootstrap) {
       embeddedservice_bootstrap.userVerificationAPI.clearSession(true).then(() => {
-        embeddedservice_bootstrap.utilAPI.removeAllComponents();
+        embeddedservice_bootstrap.utilAPI.removeAllComponents().then(() => {
+          console.log("Cleaned up Embedded Messaging components, navigating forwards");
+          navigate(event.to.pathname);
+        });
       });
     }
   });
