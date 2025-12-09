@@ -49,13 +49,15 @@ const { title, description, isHomePage = false } = Astro.props;
   document.addEventListener("astro:before-preparation", (event) => {
     async function cleaner() {
       if (window.embeddedservice_bootstrap) {
+        console.log("Cleaning up Embedded Messaging components before navigation");
         await embeddedservice_bootstrap.userVerificationAPI.clearSession(true);
+        console.log("Cleared Embedded Messaging user session");
         await embeddedservice_bootstrap.utilAPI.removeAllComponents();
         console.log("Cleaned up Embedded Messaging components, navigating forwards");
       }
     }
 
-    const originalLoader = event.detail.loader;
+    const originalLoader = event.loader;
     event.loader = async function() {
       console.log("Running Embedded Messaging cleaner before navigation");
       await cleaner();
