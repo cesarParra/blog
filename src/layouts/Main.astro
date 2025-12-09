@@ -62,7 +62,8 @@ const { title, description, isHomePage = false } = Astro.props;
       console.log("Running Embedded Messaging cleaner before navigation");
       await cleaner();
       console.log("Proceeding with original navigation loader");
-      await originalLoader();
+      console.log('purpusefully stopping navigation to test cleanup');
+      //await originalLoader();
     }
 
     // if (window.embeddedservice_bootstrap) {
