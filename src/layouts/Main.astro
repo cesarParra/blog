@@ -44,9 +44,9 @@ const { title, description, isHomePage = false } = Astro.props;
 </body>
 
 <script type="text/javascript" is:inline>
-  document.addEventListener("astro:before-preparation", (event) => {
-    import { navigate } from "astro:transitions/client";
+  import { navigate } from "astro:transitions/client";
 
+  document.addEventListener("astro:before-preparation", (event) => {
     event.preventDefault();
     console.log('event', event);
     console.log('detail:', event.detail);
