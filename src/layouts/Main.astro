@@ -44,21 +44,33 @@ const { title, description, isHomePage = false } = Astro.props;
 </body>
 
 <script type="text/javascript" is:inline>
-  import { navigate } from "astro:transitions/client";
+  // import { navigate } from "astro:transitions/client";
 
   document.addEventListener("astro:before-preparation", (event) => {
-    event.preventDefault();
-    console.log('event', event);
-    console.log('detail:', event.detail);
-    console.log("Cleaning up before page load...");
-    if (window.embeddedservice_bootstrap) {
-      embeddedservice_bootstrap.userVerificationAPI.clearSession(true).then(() => {
-        embeddedservice_bootstrap.utilAPI.removeAllComponents().then(() => {
-          console.log("Cleaned up Embedded Messaging components, navigating forwards");
-          navigate(event.to.pathname);
-        });
-      });
+    async function cleaner() {
+      if (window.embeddedservice_bootstrap) {
+        await embeddedservice_bootstrap.userVerificationAPI.clearSession(true);
+        await embeddedservice_bootstrap.utilAPI.removeAllComponents();
+        console.log("Cleaned up Embedded Messaging components, navigating forwards");
+      }
     }
+
+    const originalLoader = event.detail.loader;
+    event.loader = async function() {
+      console.log("Running Embedded Messaging cleaner before navigation");
+      await cleaner();
+      console.log("Proceeding with original navigation loader");
+      await originalLoader();
+    }
+
+    // if (window.embeddedservice_bootstrap) {
+    //   embeddedservice_bootstrap.userVerificationAPI.clearSession(true).then(() => {
+    //     embeddedservice_bootstrap.utilAPI.removeAllComponents().then(() => {
+    //       console.log("Cleaned up Embedded Messaging components, navigating forwards");
+    //       navigate(event.to.pathname);
+    //     });
+    //   });
+    // }
   });
 
   document.addEventListener("astro:page-load", () => {
