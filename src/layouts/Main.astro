@@ -45,7 +45,7 @@ const { title, description, isHomePage = false } = Astro.props;
 
 <script type="text/javascript" is:inline>
   document.addEventListener("astro:before-preparation", (event) => {
-    event.preventDefault();
+    //event.preventDefault();
     console.log("Cleaning up before page load...");
     if (window.embeddedservice_bootstrap) {
       embeddedservice_bootstrap.userVerificationAPI.clearSession(true).then(() => {
